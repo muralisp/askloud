@@ -1,0 +1,214 @@
+[
+  {
+    "id": "1234567890123456781",
+    "name": "web-server-01",
+    "zone": "us-central1-a",
+    "machineType": "e2-medium",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-11-03T08:22:14.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/default",
+        "subnetwork": "regions/us-central1/subnetworks/default",
+        "networkIP": "10.128.0.2",
+        "accessConfigs": [{ "natIP": "34.121.45.67" }]
+      }
+    ],
+    "disks": [{ "diskSizeGb": "50", "type": "pd-balanced", "boot": true }],
+    "labels": { "env": "production", "team": "frontend" },
+    "cpuPlatform": "Intel Broadwell",
+    "tags": { "items": ["http-server", "https-server"] }
+  },
+  {
+    "id": "1234567890123456782",
+    "name": "db-primary-01",
+    "zone": "us-east1-b",
+    "machineType": "n2-standard-4",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-10-15T14:05:33.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/prod-vpc",
+        "subnetwork": "regions/us-east1/subnetworks/prod-subnet",
+        "networkIP": "10.142.0.5",
+        "accessConfigs": []
+      }
+    ],
+    "disks": [
+      { "diskSizeGb": "100", "type": "pd-ssd", "boot": true },
+      { "diskSizeGb": "500", "type": "pd-ssd", "boot": false }
+    ],
+    "labels": { "env": "production", "team": "backend", "role": "database" },
+    "cpuPlatform": "Intel Ice Lake",
+    "tags": { "items": ["db-server"] }
+  },
+  {
+    "id": "1234567890123456783",
+    "name": "api-gateway-02",
+    "zone": "europe-west1-c",
+    "machineType": "e2-standard-2",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-12-01T09:45:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/default",
+        "subnetwork": "regions/europe-west1/subnetworks/default",
+        "networkIP": "10.132.0.10",
+        "accessConfigs": [{ "natIP": "34.90.112.34" }]
+      }
+    ],
+    "disks": [{ "diskSizeGb": "30", "type": "pd-balanced", "boot": true }],
+    "labels": { "env": "production", "team": "platform" },
+    "cpuPlatform": "Intel Skylake",
+    "tags": { "items": ["http-server", "load-balancer"] }
+  },
+  {
+    "id": "1234567890123456784",
+    "name": "ml-training-node-01",
+    "zone": "us-west1-b",
+    "machineType": "n1-standard-8",
+    "status": "RUNNING",
+    "creationTimestamp": "2026-01-20T11:00:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/ml-vpc",
+        "subnetwork": "regions/us-west1/subnetworks/ml-subnet",
+        "networkIP": "10.138.0.7",
+        "accessConfigs": []
+      }
+    ],
+    "disks": [
+      { "diskSizeGb": "200", "type": "pd-ssd", "boot": true }
+    ],
+    "accelerators": [{ "acceleratorType": "nvidia-tesla-t4", "acceleratorCount": 2 }],
+    "labels": { "env": "research", "team": "ml", "project": "vision-model" },
+    "cpuPlatform": "Intel Haswell",
+    "tags": { "items": ["ml-node"] }
+  },
+  {
+    "id": "1234567890123456785",
+    "name": "staging-app-01",
+    "zone": "us-central1-b",
+    "machineType": "e2-small",
+    "status": "TERMINATED",
+    "creationTimestamp": "2025-09-10T07:30:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/staging-vpc",
+        "subnetwork": "regions/us-central1/subnetworks/staging-subnet",
+        "networkIP": "10.128.0.15",
+        "accessConfigs": [{ "natIP": "35.202.88.21" }]
+      }
+    ],
+    "disks": [{ "diskSizeGb": "20", "type": "pd-standard", "boot": true }],
+    "labels": { "env": "staging", "team": "qa" },
+    "cpuPlatform": "Intel Broadwell",
+    "tags": { "items": ["staging"] }
+  },
+  {
+    "id": "1234567890123456786",
+    "name": "cache-node-redis-01",
+    "zone": "asia-east1-a",
+    "machineType": "n2-highmen-2",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-08-22T16:15:45.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/prod-vpc",
+        "subnetwork": "regions/asia-east1/subnetworks/prod-subnet",
+        "networkIP": "10.140.0.8",
+        "accessConfigs": []
+      }
+    ],
+    "disks": [{ "diskSizeGb": "30", "type": "pd-balanced", "boot": true }],
+    "labels": { "env": "production", "team": "backend", "role": "cache" },
+    "cpuPlatform": "Intel Ice Lake",
+    "tags": { "items": ["cache-server"] }
+  },
+  {
+    "id": "1234567890123456787",
+    "name": "log-aggregator-01",
+    "zone": "us-central1-c",
+    "machineType": "e2-standard-4",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-07-05T12:00:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/ops-vpc",
+        "subnetwork": "regions/us-central1/subnetworks/ops-subnet",
+        "networkIP": "10.128.0.22",
+        "accessConfigs": []
+      }
+    ],
+    "disks": [
+      { "diskSizeGb": "50", "type": "pd-balanced", "boot": true },
+      { "diskSizeGb": "1000", "type": "pd-standard", "boot": false }
+    ],
+    "labels": { "env": "ops", "team": "devops", "role": "logging" },
+    "cpuPlatform": "Intel Broadwell",
+    "tags": { "items": ["internal"] }
+  },
+  {
+    "id": "1234567890123456788",
+    "name": "bastion-host-01",
+    "zone": "us-east1-c",
+    "machineType": "e2-micro",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-06-18T10:30:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/prod-vpc",
+        "subnetwork": "regions/us-east1/subnetworks/public-subnet",
+        "networkIP": "10.142.0.2",
+        "accessConfigs": [{ "natIP": "34.74.201.55" }]
+      }
+    ],
+    "disks": [{ "diskSizeGb": "10", "type": "pd-standard", "boot": true }],
+    "labels": { "env": "production", "team": "security", "role": "bastion" },
+    "cpuPlatform": "Intel Skylake",
+    "tags": { "items": ["ssh-access", "bastion"] }
+  },
+  {
+    "id": "1234567890123456789",
+    "name": "worker-node-03",
+    "zone": "us-west2-a",
+    "machineType": "c2-standard-8",
+    "status": "STAGING",
+    "creationTimestamp": "2026-02-14T06:00:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/prod-vpc",
+        "subnetwork": "regions/us-west2/subnetworks/worker-subnet",
+        "networkIP": "10.168.0.3",
+        "accessConfigs": []
+      }
+    ],
+    "disks": [{ "diskSizeGb": "100", "type": "pd-ssd", "boot": true }],
+    "labels": { "env": "production", "team": "platform", "role": "worker" },
+    "cpuPlatform": "Intel Cascade Lake",
+    "tags": { "items": ["worker"] }
+  },
+  {
+    "id": "1234567890123456790",
+    "name": "monitoring-prometheus-01",
+    "zone": "europe-west4-a",
+    "machineType": "n2-standard-2",
+    "status": "RUNNING",
+    "creationTimestamp": "2025-05-30T08:00:00.000Z",
+    "networkInterfaces": [
+      {
+        "network": "global/networks/ops-vpc",
+        "subnetwork": "regions/europe-west4/subnetworks/ops-subnet",
+        "networkIP": "10.164.0.4",
+        "accessConfigs": [{ "natIP": "34.91.77.120" }]
+      }
+    ],
+    "disks": [
+      { "diskSizeGb": "50", "type": "pd-balanced", "boot": true },
+      { "diskSizeGb": "200", "type": "pd-standard", "boot": false }
+    ],
+    "labels": { "env": "ops", "team": "devops", "role": "monitoring" },
+    "cpuPlatform": "Intel Ice Lake",
+    "tags": { "items": ["monitoring", "internal"] }
+  }
+]

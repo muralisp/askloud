@@ -1,0 +1,2 @@
+anthropic==0.88.0
+jmespath==1.1.0

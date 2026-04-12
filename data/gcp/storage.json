@@ -1,0 +1,275 @@
+[
+  {
+    "id": "prod-web-assets-bucket-001",
+    "name": "prod-web-assets-bucket",
+    "projectId": "my-gcp-project-prod",
+    "location": "US-CENTRAL1",
+    "locationType": "region",
+    "storageClass": "STANDARD",
+    "creationTimestamp": "2025-11-03T08:30:00.000Z",
+    "updatedTimestamp": "2026-03-15T10:00:00.000Z",
+    "sizeBytes": "10737418240",
+    "objectCount": 1523,
+    "linkedVMs": ["web-server-01"],
+    "vmNetworkIP": "10.128.0.2",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": false },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "Delete" }, "condition": { "age": 90 } }
+      ]
+    },
+    "labels": { "env": "production", "team": "frontend" },
+    "encryption": { "defaultKmsKeyName": "" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  },
+  {
+    "id": "prod-db-backups-bucket-002",
+    "name": "prod-db-backups-bucket",
+    "projectId": "my-gcp-project-prod",
+    "location": "US-EAST1",
+    "locationType": "region",
+    "storageClass": "NEARLINE",
+    "creationTimestamp": "2025-10-15T14:10:00.000Z",
+    "updatedTimestamp": "2026-04-01T00:00:00.000Z",
+    "sizeBytes": "644245094400",
+    "objectCount": 312,
+    "linkedVMs": ["db-primary-01"],
+    "vmNetworkIP": "10.142.0.5",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": true },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "SetStorageClass", "storageClass": "COLDLINE" }, "condition": { "age": 30 } },
+        { "action": { "type": "Delete" }, "condition": { "age": 365 } }
+      ]
+    },
+    "labels": { "env": "production", "team": "backend", "role": "database" },
+    "encryption": { "defaultKmsKeyName": "projects/my-gcp-project-prod/locations/us-east1/keyRings/prod-ring/cryptoKeys/db-key" },
+    "publicAccess": false,
+    "retentionPolicy": { "retentionPeriodDays": 90, "isLocked": true }
+  },
+  {
+    "id": "prod-api-logs-bucket-003",
+    "name": "prod-api-logs-bucket",
+    "projectId": "my-gcp-project-prod",
+    "location": "EUROPE-WEST1",
+    "locationType": "region",
+    "storageClass": "STANDARD",
+    "creationTimestamp": "2025-12-01T09:50:00.000Z",
+    "updatedTimestamp": "2026-04-08T23:59:00.000Z",
+    "sizeBytes": "5368709120",
+    "objectCount": 88740,
+    "linkedVMs": ["api-gateway-02"],
+    "vmNetworkIP": "10.132.0.10",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": false },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "Delete" }, "condition": { "age": 60 } }
+      ]
+    },
+    "labels": { "env": "production", "team": "platform" },
+    "encryption": { "defaultKmsKeyName": "" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  },
+  {
+    "id": "research-ml-datasets-bucket-004",
+    "name": "research-ml-datasets-bucket",
+    "projectId": "my-gcp-project-research",
+    "location": "US-WEST1",
+    "locationType": "region",
+    "storageClass": "STANDARD",
+    "creationTimestamp": "2026-01-20T11:10:00.000Z",
+    "updatedTimestamp": "2026-04-07T18:30:00.000Z",
+    "sizeBytes": "2199023255552",
+    "objectCount": 45200,
+    "linkedVMs": ["ml-training-node-01"],
+    "vmNetworkIP": "10.138.0.7",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": false }
+    },
+    "versioning": { "enabled": true },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "SetStorageClass", "storageClass": "NEARLINE" }, "condition": { "age": 180 } }
+      ]
+    },
+    "labels": { "env": "research", "team": "ml", "project": "vision-model" },
+    "encryption": { "defaultKmsKeyName": "projects/my-gcp-project-research/locations/us-west1/keyRings/ml-ring/cryptoKeys/dataset-key" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  },
+  {
+    "id": "staging-app-assets-bucket-005",
+    "name": "staging-app-assets-bucket",
+    "projectId": "my-gcp-project-staging",
+    "location": "US-CENTRAL1",
+    "locationType": "region",
+    "storageClass": "STANDARD",
+    "creationTimestamp": "2025-09-10T07:40:00.000Z",
+    "updatedTimestamp": "2025-12-20T09:00:00.000Z",
+    "sizeBytes": "1073741824",
+    "objectCount": 210,
+    "linkedVMs": ["staging-app-01"],
+    "vmNetworkIP": "10.128.0.15",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": false }
+    },
+    "versioning": { "enabled": false },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "Delete" }, "condition": { "age": 30 } }
+      ]
+    },
+    "labels": { "env": "staging", "team": "qa" },
+    "encryption": { "defaultKmsKeyName": "" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  },
+  {
+    "id": "prod-cache-snapshots-bucket-006",
+    "name": "prod-cache-snapshots-bucket",
+    "projectId": "my-gcp-project-prod",
+    "location": "ASIA-EAST1",
+    "locationType": "region",
+    "storageClass": "COLDLINE",
+    "creationTimestamp": "2025-08-22T16:20:00.000Z",
+    "updatedTimestamp": "2026-03-30T04:00:00.000Z",
+    "sizeBytes": "21474836480",
+    "objectCount": 96,
+    "linkedVMs": ["cache-node-redis-01"],
+    "vmNetworkIP": "10.140.0.8",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": false },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "Delete" }, "condition": { "age": 120 } }
+      ]
+    },
+    "labels": { "env": "production", "team": "backend", "role": "cache" },
+    "encryption": { "defaultKmsKeyName": "" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  },
+  {
+    "id": "ops-log-archive-bucket-007",
+    "name": "ops-log-archive-bucket",
+    "projectId": "my-gcp-project-ops",
+    "location": "US",
+    "locationType": "multi-region",
+    "storageClass": "COLDLINE",
+    "creationTimestamp": "2025-07-05T12:10:00.000Z",
+    "updatedTimestamp": "2026-04-09T00:00:00.000Z",
+    "sizeBytes": "10995116277760",
+    "objectCount": 4200000,
+    "linkedVMs": ["log-aggregator-01"],
+    "vmNetworkIP": "10.128.0.22",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": false },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "Delete" }, "condition": { "age": 730 } }
+      ]
+    },
+    "labels": { "env": "ops", "team": "devops", "role": "logging" },
+    "encryption": { "defaultKmsKeyName": "projects/my-gcp-project-ops/locations/us/keyRings/ops-ring/cryptoKeys/log-key" },
+    "publicAccess": false,
+    "retentionPolicy": { "retentionPeriodDays": 365, "isLocked": false }
+  },
+  {
+    "id": "prod-bastion-audit-bucket-008",
+    "name": "prod-bastion-audit-bucket",
+    "projectId": "my-gcp-project-prod",
+    "location": "US-EAST1",
+    "locationType": "region",
+    "storageClass": "NEARLINE",
+    "creationTimestamp": "2025-06-18T10:35:00.000Z",
+    "updatedTimestamp": "2026-04-08T22:00:00.000Z",
+    "sizeBytes": "536870912",
+    "objectCount": 8900,
+    "linkedVMs": ["bastion-host-01"],
+    "vmNetworkIP": "10.142.0.2",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": true },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "SetStorageClass", "storageClass": "COLDLINE" }, "condition": { "age": 90 } },
+        { "action": { "type": "Delete" }, "condition": { "age": 730 } }
+      ]
+    },
+    "labels": { "env": "production", "team": "security", "role": "bastion" },
+    "encryption": { "defaultKmsKeyName": "projects/my-gcp-project-prod/locations/us-east1/keyRings/sec-ring/cryptoKeys/audit-key" },
+    "publicAccess": false,
+    "retentionPolicy": { "retentionPeriodDays": 730, "isLocked": true }
+  },
+  {
+    "id": "prod-worker-artifacts-bucket-009",
+    "name": "prod-worker-artifacts-bucket",
+    "projectId": "my-gcp-project-prod",
+    "location": "US-WEST2",
+    "locationType": "region",
+    "storageClass": "STANDARD",
+    "creationTimestamp": "2026-02-14T06:10:00.000Z",
+    "updatedTimestamp": "2026-04-09T01:00:00.000Z",
+    "sizeBytes": "322122547200",
+    "objectCount": 6710,
+    "linkedVMs": ["worker-node-03"],
+    "vmNetworkIP": "10.168.0.3",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": true },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "Delete" }, "condition": { "age": 180, "numNewerVersions": 3 } }
+      ]
+    },
+    "labels": { "env": "production", "team": "platform", "role": "worker" },
+    "encryption": { "defaultKmsKeyName": "" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  },
+  {
+    "id": "ops-monitoring-metrics-bucket-010",
+    "name": "ops-monitoring-metrics-bucket",
+    "projectId": "my-gcp-project-ops",
+    "location": "EUROPE-WEST4",
+    "locationType": "region",
+    "storageClass": "STANDARD",
+    "creationTimestamp": "2025-05-30T08:10:00.000Z",
+    "updatedTimestamp": "2026-04-09T03:00:00.000Z",
+    "sizeBytes": "107374182400",
+    "objectCount": 2100000,
+    "linkedVMs": ["monitoring-prometheus-01"],
+    "vmNetworkIP": "10.164.0.4",
+    "iamConfiguration": {
+      "uniformBucketLevelAccess": { "enabled": true }
+    },
+    "versioning": { "enabled": false },
+    "lifecycle": {
+      "rules": [
+        { "action": { "type": "SetStorageClass", "storageClass": "NEARLINE" }, "condition": { "age": 30 } },
+        { "action": { "type": "Delete" }, "condition": { "age": 365 } }
+      ]
+    },
+    "labels": { "env": "ops", "team": "devops", "role": "monitoring" },
+    "encryption": { "defaultKmsKeyName": "" },
+    "publicAccess": false,
+    "retentionPolicy": null
+  }
+]
