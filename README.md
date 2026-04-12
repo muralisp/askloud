@@ -19,6 +19,56 @@ Ask in plain English. Get a formatted table. Your inventory data never leaves yo
 
 ---
 
+## Why Askloud?
+
+### 🗂️ Multi-account inventory at your fingertips
+
+Managing cloud infrastructure across dozens of accounts and profiles means constantly switching CLI
+contexts, running repetitive commands, and piecing together results manually. Askloud gives you a
+single interface over all your AWS, GCP, and Azure inventory — ask once, get everything.
+
+### 🌐 Built for multi-cloud environments
+
+Modern infrastructure rarely lives in a single cloud. Teams running workloads across AWS, GCP, and
+Azure face a fragmented visibility problem — each provider has its own CLI, its own data model, and
+its own query syntax. Askloud normalises this into a single conversational interface. Ask about a
+resource without knowing or caring which cloud it lives in, and get a unified result that spans all
+three providers.
+
+### 🗣️ Accessible to everyone on the team
+
+Not everyone who needs cloud visibility knows JMESPath, `jq`, or CLI syntax. With Askloud, any
+stakeholder — engineer, ops lead, product manager, or executive — can query infrastructure in plain
+English and get a clean, formatted result. No training required.
+
+### ⚙️ Columns without code changes
+
+Adding or removing a field from query results is a one-line edit in a `.conf` file. No code changes,
+no redeployment, no pull requests. Field names are resolved automatically from nested paths, tag keys,
+and aliases — so the output adapts to your needs, not the other way around.
+
+### 🔒 LLM-powered without exposing your data
+
+Askloud is designed for environments where inventory data cannot leave the organisation. In both
+snapshot and live modes, **only your question reaches the LLM** — never the actual resource data.
+Cloud API responses and CLI output stay entirely on your machine.
+
+### 💰 Cost-efficient LLM usage by design
+
+Every design decision in Askloud reduces token spend:
+
+| Optimisation | How it works |
+|---|---|
+| Direct search | Single-token queries bypass the LLM entirely — zero API cost |
+| Prompt caching | System context is reused across turns via Anthropic's prompt cache |
+| Minimal input | Only your question is sent — inventory data never reaches the API |
+| No RAG | No vector store, no retrieval pipeline, no embedding overhead |
+| No chat history | Context window stays flat; costs don't grow with session length |
+
+The session summary shows exactly what you spent and what you saved.
+
+---
+
 ## Quick Start (Docker — recommended)
 
 Docker is the easiest way to get started. No Python setup, no CLI installations — everything is bundled in the image.
