@@ -26,13 +26,10 @@ Docker is the easiest way to get started. No Python setup, no CLI installations 
 **Prerequisites:** Docker installed, an [Anthropic API key](https://console.anthropic.com/), and cloud credentials configured on your host (`aws configure`, `az login`, `gcloud auth login`).
 
 ```bash
-# 1. Build the image (one-time)
-docker build -t askloud:latest .
-
-# 2. Set your API key
+# 1. Set your API key
 export ANTHROPIC_API_KEY=your_key_here
 
-# 3. Run
+# 2. Run
 ./run_askloud.sh               # interactive snapshot mode
 ./run_askloud.sh --live        # interactive live mode
 ./run_askloud.sh "list stopped instances in production"
@@ -75,7 +72,7 @@ python3 askloud_collector.py --schedule
 Queries run entirely against local JSON files — no cloud credentials needed, no network calls. The prompt shows the age of your data:
 
 ```
-[snapshot: 42min old] Ask > list running ec2 instances in dev
+[snapshot: 42min old] Ask > list running ec2 instances in prod (Note: This is dummy data)
 ```
 
 When the data for a specific account isn't in the snapshot, Askloud tells you which accounts *are* available and suggests switching to live mode.
@@ -107,7 +104,7 @@ When results span multiple accounts or regions, those parameters are automatical
 Single-token input scans all records in memory — no API call, no cost:
 
 ```
-[snapshot: 5min old] Ask > my-web-server-01
+[snapshot: 5min old] Ask > web-server-01
 [snapshot: 5min old] Ask > i-0abc123def456789a
 [snapshot: 5min old] Ask > 10.0.1.42
 ```
@@ -127,7 +124,7 @@ A **Matched** column shows exactly which field triggered each hit.
 
 ```
 [snapshot: 5min old] Ask > !date
-[snapshot: 5min old] Ask > !ls data/aws/accounts/
+[snapshot: 5min old] Ask > !ls data/aws/
 [snapshot: 5min old] Ask > list ebs in aws prod | wc -l
 [live] Ask > list all vms | sort
 ```
@@ -174,7 +171,7 @@ Define what to collect and how often in `config/collection_schedule.json`:
       "name":           "EC2 — Production / us-east-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-instances", "--region", "us-east-1"],
-      "file_path":      "data/aws/accounts/Production/us-east-1/ec2.json",
+      "file_path":      "data/aws/Production/us-east-1/ec2.json",
       "interval_hours": 1
     }
   ]
@@ -190,12 +187,11 @@ AWS `--profile` is auto-injected from the account folder name. Add a cron entry 
 ```
 data/
   aws/
-    accounts/
-      <AccountName>/
-        <region>/
-          ec2.json      # aws ec2 describe-instances --output json
-          vpc.json      # aws ec2 describe-vpcs --output json
-          ebs.json      # aws ec2 describe-volumes --output json
+    <AccountName>/
+      <region>/
+        ec2.json      # aws ec2 describe-instances --output json
+        vpc.json      # aws ec2 describe-vpcs --output json
+        ebs.json      # aws ec2 describe-volumes --output json
   gcp/
     vm.json
   azure/

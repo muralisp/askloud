@@ -262,9 +262,10 @@ class DataLoader:
     def _infer_metadata(rel_parts: list, provider: str):
         account, region = "N/A", "N/A"
         if provider == "aws":
-            if len(rel_parts) >= 4 and rel_parts[1] == "accounts":
-                account = rel_parts[2]
-                region  = rel_parts[3] if len(rel_parts) > 3 else "N/A"
+            # Layout: aws/<account>/<region>/
+            if len(rel_parts) >= 3:
+                account = rel_parts[1]
+                region  = rel_parts[2]
         elif provider in ("gcp", "azure"):
             if len(rel_parts) >= 2:
                 account = rel_parts[1]

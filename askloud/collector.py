@@ -29,7 +29,7 @@ You are the Askloud Data Collector Agent. You fetch cloud resource data and save
 it to the local Askloud data directory using the provider CLIs.
 
 ## Data directory structure
-  data/aws/accounts/<AccountName>/<region>/<resource>.json
+  data/aws/<account>/<region>/<resource>.json
   data/azure/<subscription>/<resource>.json
   data/gcp/<project>/<resource>.json
 
@@ -142,7 +142,7 @@ _TOOLS = [
                 },
                 "file_path": {
                     "type": "string",
-                    "description": "Destination path, e.g. data/aws/accounts/ProductionShared/us-east-1/ebs.json",
+                    "description": "Destination path, e.g. data/aws/Production/us-east-1/ebs.json",
                 },
             },
             "required": ["provider", "args", "file_path"],
@@ -479,7 +479,8 @@ def _inject_aws_profile(provider: str, args: list, file_path: str) -> list:
         return args
     parts = Path(file_path).parts
     try:
-        idx = list(parts).index("accounts")
+        # Layout: data / aws / <account> / <region> / ...
+        idx = list(parts).index("aws")
         account = parts[idx + 1]
         return args + ["--profile", account]
     except (ValueError, IndexError):

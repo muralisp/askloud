@@ -147,8 +147,8 @@ class CloudInventoryEngine:
                 all_of_type = loader.data.get(resource, [])
                 title = plan.get("title", resource) if first_shown else f"[{resource}]"
                 if all_of_type:
-                    accounts = sorted({r.get("Account", "") for r in all_of_type if r.get("Account")})
-                    regions  = sorted({r.get("Region",  "") for r in all_of_type if r.get("Region")})
+                    accounts = sorted({r.get("Account", "") for r in all_of_type if r.get("Account") and r.get("Account") != "N/A"})
+                    regions  = sorted({r.get("Region",  "") for r in all_of_type if r.get("Region")  and r.get("Region")  != "N/A"})
                     parts = []
                     if accounts:
                         parts.append("accounts: " + ", ".join(accounts))

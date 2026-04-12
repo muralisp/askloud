@@ -13,49 +13,49 @@
       "name":           "EC2 — DevelopmentCampaign / us-east-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-instances", "--region", "us-east-1"],
-      "file_path":      "data/aws/accounts/DevelopmentCampaign/us-east-1/ec2.json",
+      "file_path":      "data/aws/DevelopmentCampaign/us-east-1/ec2.json",
       "interval_hours": 1
     },
     {
       "name":           "EC2 — DevelopmentCampaign / ap-southeast-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-instances", "--region", "ap-southeast-1"],
-      "file_path":      "data/aws/accounts/DevelopmentCampaign/ap-southeast-1/ec2.json",
+      "file_path":      "data/aws/DevelopmentCampaign/ap-southeast-1/ec2.json",
       "interval_hours": 1
     },
     {
-      "name":           "EBS — ProductionShared / us-east-1",
+      "name":           "EBS — Production / us-east-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-volumes", "--region", "us-east-1"],
-      "file_path":      "data/aws/accounts/ProductionShared/us-east-1/ebs.json",
+      "file_path":      "data/aws/Production/us-east-1/ebs.json",
       "interval_hours": 1
     },
     {
-      "name":           "EBS — ProductionShared / eu-central-1",
+      "name":           "EBS — Production / eu-central-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-volumes", "--region", "eu-central-1"],
-      "file_path":      "data/aws/accounts/ProductionShared/eu-central-1/ebs.json",
+      "file_path":      "data/aws/Production/eu-central-1/ebs.json",
       "interval_hours": 1
     },
     {
-      "name":           "EC2 — ProductionShared / us-east-1",
+      "name":           "EC2 — Production / us-east-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-instances", "--region", "us-east-1"],
-      "file_path":      "data/aws/accounts/ProductionShared/us-east-1/ec2.json",
+      "file_path":      "data/aws/Production/us-east-1/ec2.json",
       "interval_hours": 1
     },
     {
       "name":           "VPC — NetworkServices / us-east-1",
       "provider":       "aws",
       "args":           ["ec2", "describe-vpcs", "--region", "us-east-1"],
-      "file_path":      "data/aws/accounts/NetworkServices/us-east-1/vpc.json",
+      "file_path":      "data/aws/NetworkServices/us-east-1/vpc.json",
       "interval_hours": 1
     },
     {
       "name":           "EKS — SharedQA / us-east-1",
       "provider":       "aws",
       "args":           ["eks", "list-clusters", "--region", "us-east-1"],
-      "file_path":      "data/aws/accounts/SharedQA/us-east-1/eks.json",
+      "file_path":      "data/aws/SharedQA/us-east-1/eks.json",
       "interval_hours": 1
     },
     {

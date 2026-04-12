@@ -136,16 +136,16 @@ def _resolve_meta(provider: str, file_path: str, scope: dict, loader: DataLoader
 def _inject_aws_profile(provider: str, args: list, file_path: str, scope: dict) -> list:
     """
     For AWS refreshes, automatically append --profile <account> if not already present.
-    The account is derived from the file_path (data/aws/accounts/<account>/...) or scope.
+    The account is derived from the file_path (data/aws/<account>/...) or scope.
     """
     if provider != "aws" or "--profile" in args:
         return args
     account = scope.get("Account", "")
     if not account and file_path:
         parts = Path(file_path).parts
-        # Expected: data / aws / accounts / <account> / ...
+        # Expected: data / aws / <account> / <region> / ...
         try:
-            idx = list(parts).index("accounts")
+            idx = list(parts).index("aws")
             account = parts[idx + 1]
         except (ValueError, IndexError):
             pass

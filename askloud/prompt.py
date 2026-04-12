@@ -111,7 +111,7 @@ For refresh/latest data requests use action "refresh" instead:
    - null means no filter (return all records)
 2. "icontains": Python case-insensitive contains on top-level fields.
    ALWAYS use icontains for Account and Region — users say "dev" but the account is "DevelopmentCampaign",
-   users say "production" but the account is "ProductionShared". NEVER use filter or tag_equals for Account
+   users say "production" but the account is "Production". NEVER use filter or tag_equals for Account
    or Region. For environment words (production/prod, development/dev, staging, qa), ALWAYS match via
    icontains on Account. Only additionally filter by an Environment tag if the user explicitly mentions a tag.
 3. "tag_icontains": case-insensitive contains on tag values. Works for both AWS (Tags array) and Azure (tags dict).
@@ -182,13 +182,13 @@ User: give me the count of aws resources in production
 {{"title": "AWS Resources in Production - Count", "steps": [{{"resource": "ec2", "icontains": {{"Account": "production"}}, "count_only": true, "show": true}}, {{"resource": "vpc", "icontains": {{"Account": "production"}}, "count_only": true, "show": true}}, {{"resource": "subnet", "icontains": {{"Account": "production"}}, "count_only": true, "show": true}}]}}
 
 User: get latest ec2 data for production us-east-1
-{{"title": "Refresh EC2 — ProductionShared us-east-1", "steps": [{{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--region", "us-east-1"], "file_path": "data/aws/accounts/ProductionShared/us-east-1/ec2.json", "scope": {{"Region": "us-east-1", "Account": "ProductionShared"}}}}]}}
+{{"title": "Refresh EC2 — Production us-east-1", "steps": [{{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--region", "us-east-1"], "file_path": "data/aws/Production/us-east-1/ec2.json", "scope": {{"Region": "us-east-1", "Account": "Production"}}}}]}}
 
 User: refresh data for instance i-0abc123
-{{"title": "Refresh EC2 instance i-0abc123", "steps": [{{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--instance-ids", "i-0abc123", "--region", "us-east-1"], "file_path": "data/aws/accounts/ProductionShared/us-east-1/ec2.json", "scope": {{"InstanceId": "i-0abc123"}}}}]}}
+{{"title": "Refresh EC2 instance i-0abc123", "steps": [{{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--instance-ids", "i-0abc123", "--region", "us-east-1"], "file_path": "data/aws/Production/us-east-1/ec2.json", "scope": {{"InstanceId": "i-0abc123"}}}}]}}
 
 User: get latest about i-0abc123  (region/account unknown from conversation)
-{{"title": "Refresh EC2 instance i-0abc123", "steps": [{{"action": "query", "resource": "ec2", "filter": "[?InstanceId == 'i-0abc123']", "bind": {{"region": "Region", "account": "Account"}}, "show": false}}, {{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--instance-ids", "i-0abc123", "--region", "{{region}}"], "file_path": "data/aws/accounts/{{account}}/{{region}}/ec2.json", "scope": {{"InstanceId": "i-0abc123"}}}}]}}
+{{"title": "Refresh EC2 instance i-0abc123", "steps": [{{"action": "query", "resource": "ec2", "filter": "[?InstanceId == 'i-0abc123']", "bind": {{"region": "Region", "account": "Account"}}, "show": false}}, {{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--instance-ids", "i-0abc123", "--region", "{{region}}"], "file_path": "data/aws/{{account}}/{{region}}/ec2.json", "scope": {{"InstanceId": "i-0abc123"}}}}]}}
 
 User: show me the cost of all azure resources
 {{"title": "Azure Resource Cost", "steps": [], "unavailable": "Cost/pricing data is not in the local snapshot. Switch to live mode with /live to query it in real time."}}
