@@ -1,1 +1,613 @@
-[]
+[
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-frontend/providers/Microsoft.Compute/virtualMachines/web-server-01",
+    "name": "web-server-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastus",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-frontend",
+    "zones": ["1"],
+    "properties": {
+      "vmId": "vm-00000000-0001-0001-0001-000000000001",
+      "hardwareProfile": {
+        "vmSize": "Standard_D2s_v3"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "web-server-01-osdisk",
+          "diskSizeGB": 128,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-frontend/providers/Microsoft.Compute/disks/web-server-01-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "20_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "web-server-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-frontend/providers/Microsoft.Network/networkInterfaces/web-server-01-nic",
+            "privateIPAddress": "10.0.1.10",
+            "publicIPAddress": "52.186.45.67"
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-11-03T08:22:14.000Z"
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "frontend",
+      "CostCenter": "CC-101"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Compute/virtualMachines/db-primary-01",
+    "name": "db-primary-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-backend",
+    "zones": ["2"],
+    "properties": {
+      "vmId": "vm-00000000-0002-0002-0002-000000000002",
+      "hardwareProfile": {
+        "vmSize": "Standard_E8s_v5"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "db-primary-01-osdisk",
+          "diskSizeGB": 128,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Compute/disks/db-primary-01-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [
+          {
+            "name": "db-primary-01-datadisk-01",
+            "lun": 0,
+            "diskSizeGB": 512,
+            "managedDisk": {
+              "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Compute/disks/db-primary-01-datadisk-01",
+              "storageAccountType": "UltraSSD_LRS"
+            },
+            "createOption": "Empty"
+          }
+        ],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "20_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "db-primary-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Network/networkInterfaces/db-primary-01-nic",
+            "privateIPAddress": "10.0.2.20",
+            "publicIPAddress": null
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-10-15T14:05:33.000Z"
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "backend",
+      "Role": "database",
+      "CostCenter": "CC-102"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Compute/virtualMachines/api-gateway-02",
+    "name": "api-gateway-02",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "westeurope",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-platform",
+    "zones": ["1"],
+    "properties": {
+      "vmId": "vm-00000000-0003-0003-0003-000000000003",
+      "hardwareProfile": {
+        "vmSize": "Standard_D4s_v3"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "api-gateway-02-osdisk",
+          "diskSizeGB": 64,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Compute/disks/api-gateway-02-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "22_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "api-gateway-02",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Network/networkInterfaces/api-gateway-02-nic",
+            "privateIPAddress": "10.0.3.30",
+            "publicIPAddress": "51.144.112.34"
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-12-01T09:45:00.000Z"
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "platform",
+      "CostCenter": "CC-103"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-research-ml/providers/Microsoft.Compute/virtualMachines/ml-training-node-01",
+    "name": "ml-training-node-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "westus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-research-ml",
+    "zones": ["3"],
+    "properties": {
+      "vmId": "vm-00000000-0004-0004-0004-000000000004",
+      "hardwareProfile": {
+        "vmSize": "Standard_NC12s_v3"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "ml-training-node-01-osdisk",
+          "diskSizeGB": 256,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-research-ml/providers/Microsoft.Compute/disks/ml-training-node-01-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [
+          {
+            "name": "ml-training-node-01-datadisk-01",
+            "lun": 0,
+            "diskSizeGB": 1024,
+            "managedDisk": {
+              "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-research-ml/providers/Microsoft.Compute/disks/ml-training-node-01-datadisk-01",
+              "storageAccountType": "Premium_LRS"
+            },
+            "createOption": "Empty"
+          }
+        ],
+        "imageReference": {
+          "publisher": "microsoft-dsvm",
+          "offer": "ubuntu-2004",
+          "sku": "2004-gen2",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "ml-training-node-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-research-ml/providers/Microsoft.Network/networkInterfaces/ml-training-node-01-nic",
+            "privateIPAddress": "10.0.4.40",
+            "publicIPAddress": null
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2026-01-20T11:00:00.000Z"
+    },
+    "tags": {
+      "Env": "research",
+      "Team": "ml",
+      "Project": "vision-model",
+      "CostCenter": "CC-201"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567802/resourceGroups/rg-staging/providers/Microsoft.Compute/virtualMachines/staging-app-01",
+    "name": "staging-app-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastus",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567802",
+    "resourceGroup": "rg-staging",
+    "zones": ["1"],
+    "properties": {
+      "vmId": "vm-00000000-0005-0005-0005-000000000005",
+      "hardwareProfile": {
+        "vmSize": "Standard_B2s"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "staging-app-01-osdisk",
+          "diskSizeGB": 64,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567802/resourceGroups/rg-staging/providers/Microsoft.Compute/disks/staging-app-01-osdisk",
+            "storageAccountType": "Standard_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "20_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "staging-app-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": false }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567802/resourceGroups/rg-staging/providers/Microsoft.Network/networkInterfaces/staging-app-01-nic",
+            "privateIPAddress": "10.0.1.50",
+            "publicIPAddress": "20.88.201.99"
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "deallocated",
+      "creationTime": "2025-09-10T07:30:00.000Z"
+    },
+    "tags": {
+      "Env": "staging",
+      "Team": "qa",
+      "CostCenter": "CC-301"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Compute/virtualMachines/cache-node-redis-01",
+    "name": "cache-node-redis-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastasia",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-backend",
+    "zones": ["2"],
+    "properties": {
+      "vmId": "vm-00000000-0006-0006-0006-000000000006",
+      "hardwareProfile": {
+        "vmSize": "Standard_E4bs_v5"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "cache-node-redis-01-osdisk",
+          "diskSizeGB": 64,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Compute/disks/cache-node-redis-01-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "20_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "cache-node-redis-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Network/networkInterfaces/cache-node-redis-01-nic",
+            "privateIPAddress": "10.0.5.60",
+            "publicIPAddress": null
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-08-22T16:15:45.000Z"
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "backend",
+      "Role": "cache",
+      "CostCenter": "CC-102"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Compute/virtualMachines/log-aggregator-01",
+    "name": "log-aggregator-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastus",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "resourceGroup": "rg-ops",
+    "zones": ["3"],
+    "properties": {
+      "vmId": "vm-00000000-0007-0007-0007-000000000007",
+      "hardwareProfile": {
+        "vmSize": "Standard_D8s_v5"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "log-aggregator-01-osdisk",
+          "diskSizeGB": 128,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Compute/disks/log-aggregator-01-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [
+          {
+            "name": "log-aggregator-01-datadisk-01",
+            "lun": 0,
+            "diskSizeGB": 2048,
+            "managedDisk": {
+              "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Compute/disks/log-aggregator-01-datadisk-01",
+              "storageAccountType": "Standard_LRS"
+            },
+            "createOption": "Empty"
+          }
+        ],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "20_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "log-aggregator-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Network/networkInterfaces/log-aggregator-01-nic",
+            "privateIPAddress": "10.0.1.70",
+            "publicIPAddress": null
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-07-05T12:00:00.000Z"
+    },
+    "tags": {
+      "Env": "ops",
+      "Team": "devops",
+      "Role": "logging",
+      "CostCenter": "CC-401"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-security/providers/Microsoft.Compute/virtualMachines/bastion-host-01",
+    "name": "bastion-host-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-security",
+    "zones": ["1"],
+    "properties": {
+      "vmId": "vm-00000000-0008-0008-0008-000000000008",
+      "hardwareProfile": {
+        "vmSize": "Standard_B1ms"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "bastion-host-01-osdisk",
+          "diskSizeGB": 32,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-security/providers/Microsoft.Compute/disks/bastion-host-01-osdisk",
+            "storageAccountType": "Standard_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "20_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "bastion-host-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-security/providers/Microsoft.Network/networkInterfaces/bastion-host-01-nic",
+            "privateIPAddress": "10.0.2.80",
+            "publicIPAddress": "20.62.201.55"
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-06-18T10:30:00.000Z"
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "security",
+      "Role": "bastion",
+      "CostCenter": "CC-104"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Compute/virtualMachines/worker-node-03",
+    "name": "worker-node-03",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "westus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-platform",
+    "zones": ["2"],
+    "properties": {
+      "vmId": "vm-00000000-0009-0009-0009-000000000009",
+      "hardwareProfile": {
+        "vmSize": "Standard_F8s_v2"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "worker-node-03-osdisk",
+          "diskSizeGB": 128,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Compute/disks/worker-node-03-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "22_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "worker-node-03",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Network/networkInterfaces/worker-node-03-nic",
+            "privateIPAddress": "10.0.4.90",
+            "publicIPAddress": null
+          }
+        ]
+      },
+      "provisioningState": "Creating",
+      "powerState": "starting",
+      "creationTime": "2026-02-14T06:00:00.000Z"
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "platform",
+      "Role": "worker",
+      "CostCenter": "CC-103"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Compute/virtualMachines/monitoring-prometheus-01",
+    "name": "monitoring-prometheus-01",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "northeurope",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "resourceGroup": "rg-ops",
+    "zones": ["1"],
+    "properties": {
+      "vmId": "vm-00000000-0010-0010-0010-000000000010",
+      "hardwareProfile": {
+        "vmSize": "Standard_D4s_v5"
+      },
+      "storageProfile": {
+        "osDisk": {
+          "name": "monitoring-prometheus-01-osdisk",
+          "diskSizeGB": 128,
+          "managedDisk": {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Compute/disks/monitoring-prometheus-01-osdisk",
+            "storageAccountType": "Premium_LRS"
+          },
+          "osType": "Linux",
+          "createOption": "FromImage"
+        },
+        "dataDisks": [
+          {
+            "name": "monitoring-prometheus-01-datadisk-01",
+            "lun": 0,
+            "diskSizeGB": 512,
+            "managedDisk": {
+              "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Compute/disks/monitoring-prometheus-01-datadisk-01",
+              "storageAccountType": "Standard_LRS"
+            },
+            "createOption": "Empty"
+          }
+        ],
+        "imageReference": {
+          "publisher": "Canonical",
+          "offer": "UbuntuServer",
+          "sku": "22_04-lts",
+          "version": "latest"
+        }
+      },
+      "osProfile": {
+        "computerName": "monitoring-prometheus-01",
+        "adminUsername": "azureuser",
+        "linuxConfiguration": { "disablePasswordAuthentication": true }
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Network/networkInterfaces/monitoring-prometheus-01-nic",
+            "privateIPAddress": "10.0.3.100",
+            "publicIPAddress": "20.107.77.120"
+          }
+        ]
+      },
+      "provisioningState": "Succeeded",
+      "powerState": "running",
+      "creationTime": "2025-05-30T08:00:00.000Z"
+    },
+    "tags": {
+      "Env": "ops",
+      "Team": "devops",
+      "Role": "monitoring",
+      "CostCenter": "CC-401"
+    }
+  }
+]

@@ -19,37 +19,51 @@ Ask in plain English. Get a formatted table. Your inventory data never leaves yo
 
 ---
 
-## Requirements
+## Quick Start (Docker — recommended)
 
-- Python 3.10+
-- An [Anthropic API key](https://console.anthropic.com/)
+Docker is the easiest way to get started. No Python setup, no CLI installations — everything is bundled in the image.
+
+**Prerequisites:** Docker installed, an [Anthropic API key](https://console.anthropic.com/), and cloud credentials configured on your host (`aws configure`, `az login`, `gcloud auth login`).
+
+```bash
+# 1. Build the image (one-time)
+docker build -t askloud:latest .
+
+# 2. Set your API key
+export ANTHROPIC_API_KEY=your_key_here
+
+# 3. Run
+./run_askloud.sh               # interactive snapshot mode
+./run_askloud.sh --live        # interactive live mode
+./run_askloud.sh "list stopped instances in production"
+./run_askloud_collector.sh --schedule
+```
+
+Your `data/` and `config/` directories are mounted into the container automatically. Cloud credentials are passed in read-only from `~/.aws`, `~/.azure`, and `~/.config/gcloud`.
+
+---
+
+## Running Without Docker
+
+If you prefer to run the Python scripts directly, set up the environment first:
 
 ```bash
 pip install anthropic jmespath
 export ANTHROPIC_API_KEY=your_key_here
-```
 
-For live mode, install and configure the relevant cloud CLIs:
-```bash
+# For live mode and snapshot refresh, configure the cloud CLIs:
 aws configure     # AWS
 az login          # Azure
 gcloud auth login # GCP
 ```
 
----
-
-## Quick Start
+Then run:
 
 ```bash
-# Interactive — snapshot mode (default)
-python3 askloud.py
-
-# Interactive — live mode
-python3 askloud.py --live
-
-# One-shot query
+python3 askloud.py               # interactive snapshot mode
+python3 askloud.py --live        # interactive live mode
 python3 askloud.py "list stopped instances in production"
-python3 askloud.py my-web-server-01
+python3 askloud_collector.py --schedule
 ```
 
 ---
@@ -168,22 +182,6 @@ Define what to collect and how often in `config/collection_schedule.json`:
 ```
 
 AWS `--profile` is auto-injected from the account folder name. Add a cron entry to run `--schedule` hourly.
-
----
-
-## Docker
-
-```bash
-# Build (includes AWS CLI v2, Azure CLI, Google Cloud CLI)
-docker build -t askloud:latest .
-
-# Run
-./run_askloud.sh               # interactive snapshot mode
-./run_askloud.sh --live        # interactive live mode
-./run_askloud_collector.sh --schedule
-```
-
-Credential directories (`~/.aws`, `~/.azure`, `~/.config/gcloud`) are mounted read-only from your host. Inventory data is mounted read-write so the collector can write new files.
 
 ---
 
