@@ -1,0 +1,844 @@
+[
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-frontend/providers/Microsoft.Storage/storageAccounts/stprodwebasssets001",
+    "name": "stprodwebasssets001",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastus",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-frontend",
+    "sku": {
+      "name": "Standard_LRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-11-03T08:30:00.000Z",
+    "linkedVM": {
+      "name": "web-server-01",
+      "vmId": "vm-00000000-0001-0001-0001-000000000001",
+      "privateIPAddress": "10.0.1.10",
+      "resourceGroup": "rg-prod-frontend"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "eastus",
+      "secondaryLocation": "westus",
+      "statusOfPrimary": "available",
+      "statusOfSecondary": "available",
+      "accessTier": "Hot",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": true,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stprodwebasssets001.blob.core.windows.net/",
+        "file": "https://stprodwebasssets001.file.core.windows.net/",
+        "queue": "https://stprodwebasssets001.queue.core.windows.net/",
+        "table": "https://stprodwebasssets001.table.core.windows.net/"
+      },
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-11-03T08:30:00.000Z" },
+          "file": { "enabled": true, "lastEnabledTime": "2025-11-03T08:30:00.000Z" }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "AzureServices",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-frontend/providers/Microsoft.Network/virtualNetworks/vnet-prod/subnets/subnet-frontend" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 4,
+        "totalSizeBytes": 10737418240,
+        "objectCount": 1523,
+        "versioning": { "enabled": false },
+        "deleteRetentionPolicy": { "enabled": true, "days": 7 },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "delete-old-assets",
+            "enabled": true,
+            "definition": {
+              "actions": { "baseBlob": { "delete": { "daysAfterModificationGreaterThan": 90 } } },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "frontend",
+      "CostCenter": "CC-101"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Storage/storageAccounts/stproddbbackups002",
+    "name": "stproddbbackups002",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-backend",
+    "sku": {
+      "name": "Standard_GRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-10-15T14:10:00.000Z",
+    "linkedVM": {
+      "name": "db-primary-01",
+      "vmId": "vm-00000000-0002-0002-0002-000000000002",
+      "privateIPAddress": "10.0.2.20",
+      "resourceGroup": "rg-prod-backend"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "eastus2",
+      "secondaryLocation": "centralus",
+      "statusOfPrimary": "available",
+      "statusOfSecondary": "available",
+      "accessTier": "Cool",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": false,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stproddbbackups002.blob.core.windows.net/",
+        "file": "https://stproddbbackups002.file.core.windows.net/",
+        "queue": null,
+        "table": null
+      },
+      "encryption": {
+        "keySource": "Microsoft.Keyvault",
+        "keyVaultProperties": {
+          "keyName": "db-backup-key",
+          "keyVaultUri": "https://kv-prod-backend.vault.azure.net/",
+          "keyVersion": "a1b2c3d4e5f6"
+        },
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-10-15T14:10:00.000Z" },
+          "file": { "enabled": true, "lastEnabledTime": "2025-10-15T14:10:00.000Z" }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "None",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Network/virtualNetworks/vnet-prod/subnets/subnet-backend" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 2,
+        "totalSizeBytes": 644245094400,
+        "objectCount": 312,
+        "versioning": { "enabled": true },
+        "deleteRetentionPolicy": { "enabled": true, "days": 30 },
+        "changeFeed": { "enabled": true }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "tier-to-archive",
+            "enabled": true,
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToArchive": { "daysAfterModificationGreaterThan": 30 },
+                  "delete": { "daysAfterModificationGreaterThan": 365 }
+                }
+              },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "backend",
+      "Role": "database",
+      "CostCenter": "CC-102"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Storage/storageAccounts/stprodapilogs003",
+    "name": "stprodapilogs003",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "westeurope",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-platform",
+    "sku": {
+      "name": "Standard_LRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-12-01T09:50:00.000Z",
+    "linkedVM": {
+      "name": "api-gateway-02",
+      "vmId": "vm-00000000-0003-0003-0003-000000000003",
+      "privateIPAddress": "10.0.3.30",
+      "resourceGroup": "rg-prod-platform"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "westeurope",
+      "secondaryLocation": null,
+      "statusOfPrimary": "available",
+      "statusOfSecondary": null,
+      "accessTier": "Hot",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": true,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stprodapilogs003.blob.core.windows.net/",
+        "file": null,
+        "queue": "https://stprodapilogs003.queue.core.windows.net/",
+        "table": "https://stprodapilogs003.table.core.windows.net/"
+      },
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-12-01T09:50:00.000Z" },
+          "file": { "enabled": false }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "AzureServices",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Network/virtualNetworks/vnet-prod-eu/subnets/subnet-platform" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 6,
+        "totalSizeBytes": 5368709120,
+        "objectCount": 88740,
+        "versioning": { "enabled": false },
+        "deleteRetentionPolicy": { "enabled": true, "days": 3 },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "delete-old-logs",
+            "enabled": true,
+            "definition": {
+              "actions": { "baseBlob": { "delete": { "daysAfterModificationGreaterThan": 60 } } },
+              "filters": { "blobTypes": ["appendBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "platform",
+      "CostCenter": "CC-103"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-research-ml/providers/Microsoft.Storage/storageAccounts/stresearchmldatasets004",
+    "name": "stresearchmldatasets004",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "westus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-research-ml",
+    "sku": {
+      "name": "Premium_LRS",
+      "tier": "Premium"
+    },
+    "kind": "BlockBlobStorage",
+    "creationTime": "2026-01-20T11:10:00.000Z",
+    "linkedVM": {
+      "name": "ml-training-node-01",
+      "vmId": "vm-00000000-0004-0004-0004-000000000004",
+      "privateIPAddress": "10.0.4.40",
+      "resourceGroup": "rg-research-ml"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "westus2",
+      "secondaryLocation": null,
+      "statusOfPrimary": "available",
+      "statusOfSecondary": null,
+      "accessTier": "Hot",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": false,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stresearchmldatasets004.blob.core.windows.net/",
+        "file": null,
+        "queue": null,
+        "table": null
+      },
+      "encryption": {
+        "keySource": "Microsoft.Keyvault",
+        "keyVaultProperties": {
+          "keyName": "ml-dataset-key",
+          "keyVaultUri": "https://kv-research-ml.vault.azure.net/",
+          "keyVersion": "b2c3d4e5f6a1"
+        },
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2026-01-20T11:10:00.000Z" },
+          "file": { "enabled": false }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "None",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-research-ml/providers/Microsoft.Network/virtualNetworks/vnet-research/subnets/subnet-ml" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 8,
+        "totalSizeBytes": 2199023255552,
+        "objectCount": 45200,
+        "versioning": { "enabled": true },
+        "deleteRetentionPolicy": { "enabled": true, "days": 14 },
+        "changeFeed": { "enabled": true }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "tier-cold-datasets",
+            "enabled": true,
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToCool": { "daysAfterModificationGreaterThan": 180 }
+                }
+              },
+              "filters": { "blobTypes": ["blockBlob"], "prefixMatch": ["datasets/archived/"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "research",
+      "Team": "ml",
+      "Project": "vision-model",
+      "CostCenter": "CC-201"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567802/resourceGroups/rg-staging/providers/Microsoft.Storage/storageAccounts/ststagingappassets005",
+    "name": "ststagingappassets005",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastus",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567802",
+    "resourceGroup": "rg-staging",
+    "sku": {
+      "name": "Standard_LRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-09-10T07:40:00.000Z",
+    "linkedVM": {
+      "name": "staging-app-01",
+      "vmId": "vm-00000000-0005-0005-0005-000000000005",
+      "privateIPAddress": "10.0.1.50",
+      "resourceGroup": "rg-staging"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "eastus",
+      "secondaryLocation": null,
+      "statusOfPrimary": "available",
+      "statusOfSecondary": null,
+      "accessTier": "Hot",
+      "supportsHttpsTrafficOnly": false,
+      "minimumTlsVersion": "TLS1_0",
+      "allowBlobPublicAccess": true,
+      "allowSharedKeyAccess": true,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://ststagingappassets005.blob.core.windows.net/",
+        "file": "https://ststagingappassets005.file.core.windows.net/",
+        "queue": null,
+        "table": null
+      },
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-09-10T07:40:00.000Z" },
+          "file": { "enabled": false }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Allow",
+        "bypass": "AzureServices",
+        "virtualNetworkRules": [],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 2,
+        "totalSizeBytes": 1073741824,
+        "objectCount": 210,
+        "versioning": { "enabled": false },
+        "deleteRetentionPolicy": { "enabled": false, "days": null },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "delete-staging-blobs",
+            "enabled": true,
+            "definition": {
+              "actions": { "baseBlob": { "delete": { "daysAfterModificationGreaterThan": 30 } } },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "staging",
+      "Team": "qa",
+      "CostCenter": "CC-301"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Storage/storageAccounts/stprodcachesnaps006",
+    "name": "stprodcachesnaps006",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastasia",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-backend",
+    "sku": {
+      "name": "Standard_LRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-08-22T16:20:00.000Z",
+    "linkedVM": {
+      "name": "cache-node-redis-01",
+      "vmId": "vm-00000000-0006-0006-0006-000000000006",
+      "privateIPAddress": "10.0.5.60",
+      "resourceGroup": "rg-prod-backend"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "eastasia",
+      "secondaryLocation": null,
+      "statusOfPrimary": "available",
+      "statusOfSecondary": null,
+      "accessTier": "Cool",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": true,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stprodcachesnaps006.blob.core.windows.net/",
+        "file": null,
+        "queue": null,
+        "table": null
+      },
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-08-22T16:20:00.000Z" },
+          "file": { "enabled": false }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "AzureServices",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-backend/providers/Microsoft.Network/virtualNetworks/vnet-prod-asia/subnets/subnet-backend" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 1,
+        "totalSizeBytes": 21474836480,
+        "objectCount": 96,
+        "versioning": { "enabled": false },
+        "deleteRetentionPolicy": { "enabled": true, "days": 7 },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "delete-old-snapshots",
+            "enabled": true,
+            "definition": {
+              "actions": { "baseBlob": { "delete": { "daysAfterModificationGreaterThan": 120 } } },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "backend",
+      "Role": "cache",
+      "CostCenter": "CC-102"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Storage/storageAccounts/stopslogarchive007",
+    "name": "stopslogarchive007",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastus",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "resourceGroup": "rg-ops",
+    "sku": {
+      "name": "Standard_RAGRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-07-05T12:10:00.000Z",
+    "linkedVM": {
+      "name": "log-aggregator-01",
+      "vmId": "vm-00000000-0007-0007-0007-000000000007",
+      "privateIPAddress": "10.0.1.70",
+      "resourceGroup": "rg-ops"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "eastus",
+      "secondaryLocation": "westus",
+      "statusOfPrimary": "available",
+      "statusOfSecondary": "available",
+      "accessTier": "Cool",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": false,
+      "largeFileSharesState": "Enabled",
+      "primaryEndpoints": {
+        "blob": "https://stopslogarchive007.blob.core.windows.net/",
+        "file": "https://stopslogarchive007.file.core.windows.net/",
+        "queue": "https://stopslogarchive007.queue.core.windows.net/",
+        "table": "https://stopslogarchive007.table.core.windows.net/"
+      },
+      "encryption": {
+        "keySource": "Microsoft.Keyvault",
+        "keyVaultProperties": {
+          "keyName": "log-archive-key",
+          "keyVaultUri": "https://kv-ops.vault.azure.net/",
+          "keyVersion": "c3d4e5f6a1b2"
+        },
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-07-05T12:10:00.000Z" },
+          "file": { "enabled": true, "lastEnabledTime": "2025-07-05T12:10:00.000Z" }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "None",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Network/virtualNetworks/vnet-ops/subnets/subnet-ops" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 12,
+        "totalSizeBytes": 10995116277760,
+        "objectCount": 4200000,
+        "versioning": { "enabled": false },
+        "deleteRetentionPolicy": { "enabled": true, "days": 90 },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "archive-old-logs",
+            "enabled": true,
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToArchive": { "daysAfterModificationGreaterThan": 90 },
+                  "delete": { "daysAfterModificationGreaterThan": 730 }
+                }
+              },
+              "filters": { "blobTypes": ["appendBlob", "blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "ops",
+      "Team": "devops",
+      "Role": "logging",
+      "CostCenter": "CC-401"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-security/providers/Microsoft.Storage/storageAccounts/stprodbastionaudit008",
+    "name": "stprodbastionaudit008",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "eastus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-security",
+    "sku": {
+      "name": "Standard_GRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-06-18T10:35:00.000Z",
+    "linkedVM": {
+      "name": "bastion-host-01",
+      "vmId": "vm-00000000-0008-0008-0008-000000000008",
+      "privateIPAddress": "10.0.2.80",
+      "resourceGroup": "rg-prod-security"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "eastus2",
+      "secondaryLocation": "centralus",
+      "statusOfPrimary": "available",
+      "statusOfSecondary": "available",
+      "accessTier": "Cool",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": false,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stprodbastionaudit008.blob.core.windows.net/",
+        "file": null,
+        "queue": null,
+        "table": null
+      },
+      "encryption": {
+        "keySource": "Microsoft.Keyvault",
+        "keyVaultProperties": {
+          "keyName": "bastion-audit-key",
+          "keyVaultUri": "https://kv-prod-security.vault.azure.net/",
+          "keyVersion": "d4e5f6a1b2c3"
+        },
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-06-18T10:35:00.000Z" },
+          "file": { "enabled": false }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "None",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-security/providers/Microsoft.Network/virtualNetworks/vnet-prod/subnets/subnet-security" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 3,
+        "totalSizeBytes": 536870912,
+        "objectCount": 8900,
+        "versioning": { "enabled": true },
+        "deleteRetentionPolicy": { "enabled": true, "days": 365 },
+        "changeFeed": { "enabled": true }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "retain-audit-logs",
+            "enabled": true,
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToArchive": { "daysAfterModificationGreaterThan": 90 },
+                  "delete": { "daysAfterModificationGreaterThan": 730 }
+                }
+              },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "security",
+      "Role": "bastion",
+      "CostCenter": "CC-104"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Storage/storageAccounts/stprodworkerartifacts009",
+    "name": "stprodworkerartifacts009",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "westus2",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
+    "resourceGroup": "rg-prod-platform",
+    "sku": {
+      "name": "Standard_LRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2026-02-14T06:10:00.000Z",
+    "linkedVM": {
+      "name": "worker-node-03",
+      "vmId": "vm-00000000-0009-0009-0009-000000000009",
+      "privateIPAddress": "10.0.4.90",
+      "resourceGroup": "rg-prod-platform"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "westus2",
+      "secondaryLocation": null,
+      "statusOfPrimary": "available",
+      "statusOfSecondary": null,
+      "accessTier": "Hot",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": true,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stprodworkerartifacts009.blob.core.windows.net/",
+        "file": "https://stprodworkerartifacts009.file.core.windows.net/",
+        "queue": "https://stprodworkerartifacts009.queue.core.windows.net/",
+        "table": null
+      },
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2026-02-14T06:10:00.000Z" },
+          "file": { "enabled": true, "lastEnabledTime": "2026-02-14T06:10:00.000Z" }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "AzureServices",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567801/resourceGroups/rg-prod-platform/providers/Microsoft.Network/virtualNetworks/vnet-prod-west/subnets/subnet-platform" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 5,
+        "totalSizeBytes": 322122547200,
+        "objectCount": 6710,
+        "versioning": { "enabled": true },
+        "deleteRetentionPolicy": { "enabled": true, "days": 14 },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "cleanup-old-artifacts",
+            "enabled": true,
+            "definition": {
+              "actions": {
+                "baseBlob": { "delete": { "daysAfterModificationGreaterThan": 180 } },
+                "snapshot": { "delete": { "daysAfterCreationGreaterThan": 90 } }
+              },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "production",
+      "Team": "platform",
+      "Role": "worker",
+      "CostCenter": "CC-103"
+    }
+  },
+  {
+    "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Storage/storageAccounts/stopsmonitoringmetrics010",
+    "name": "stopsmonitoringmetrics010",
+    "type": "Microsoft.Storage/storageAccounts",
+    "location": "northeurope",
+    "subscriptionId": "a1b2c3d4-e5f6-7890-abcd-ef1234567803",
+    "resourceGroup": "rg-ops",
+    "sku": {
+      "name": "Standard_GRS",
+      "tier": "Standard"
+    },
+    "kind": "StorageV2",
+    "creationTime": "2025-05-30T08:10:00.000Z",
+    "linkedVM": {
+      "name": "monitoring-prometheus-01",
+      "vmId": "vm-00000000-0010-0010-0010-000000000010",
+      "privateIPAddress": "10.0.3.100",
+      "resourceGroup": "rg-ops"
+    },
+    "properties": {
+      "provisioningState": "Succeeded",
+      "primaryLocation": "northeurope",
+      "secondaryLocation": "westeurope",
+      "statusOfPrimary": "available",
+      "statusOfSecondary": "available",
+      "accessTier": "Hot",
+      "supportsHttpsTrafficOnly": true,
+      "minimumTlsVersion": "TLS1_2",
+      "allowBlobPublicAccess": false,
+      "allowSharedKeyAccess": true,
+      "largeFileSharesState": "Disabled",
+      "primaryEndpoints": {
+        "blob": "https://stopsmonitoringmetrics010.blob.core.windows.net/",
+        "file": null,
+        "queue": "https://stopsmonitoringmetrics010.queue.core.windows.net/",
+        "table": "https://stopsmonitoringmetrics010.table.core.windows.net/"
+      },
+      "encryption": {
+        "keySource": "Microsoft.Storage",
+        "services": {
+          "blob": { "enabled": true, "lastEnabledTime": "2025-05-30T08:10:00.000Z" },
+          "file": { "enabled": false }
+        }
+      },
+      "networkAcls": {
+        "defaultAction": "Deny",
+        "bypass": "AzureServices",
+        "virtualNetworkRules": [
+          { "id": "/subscriptions/a1b2c3d4-e5f6-7890-abcd-ef1234567803/resourceGroups/rg-ops/providers/Microsoft.Network/virtualNetworks/vnet-ops-eu/subnets/subnet-monitoring" }
+        ],
+        "ipRules": []
+      },
+      "blobServiceProperties": {
+        "containerCount": 7,
+        "totalSizeBytes": 107374182400,
+        "objectCount": 2100000,
+        "versioning": { "enabled": false },
+        "deleteRetentionPolicy": { "enabled": true, "days": 7 },
+        "changeFeed": { "enabled": false }
+      },
+      "lifecycleManagement": {
+        "rules": [
+          {
+            "name": "tier-metrics-to-cool",
+            "enabled": true,
+            "definition": {
+              "actions": {
+                "baseBlob": {
+                  "tierToCool": { "daysAfterModificationGreaterThan": 30 },
+                  "delete": { "daysAfterModificationGreaterThan": 365 }
+                }
+              },
+              "filters": { "blobTypes": ["blockBlob"] }
+            }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "Env": "ops",
+      "Team": "devops",
+      "Role": "monitoring",
+      "CostCenter": "CC-401"
+    }
+  }
+]
