@@ -1,0 +1,365 @@
+[
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67801",
+    "InstanceType": "t3.medium",
+    "ImageId": "ami-0c55b159cbfafe1f0",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-11-03T08:22:14.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-east-1a",
+      "Region": "us-east-1",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.1.10",
+    "PublicIpAddress": "54.210.45.67",
+    "PrivateDnsName": "ip-10-0-1-10.ec2.internal",
+    "PublicDnsName": "ec2-54-210-45-67.compute-1.amazonaws.com",
+    "VpcId": "vpc-0abc12345def67890",
+    "SubnetId": "subnet-0abc12345def00001",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00001", "GroupName": "web-server-sg" }
+    ],
+    "KeyName": "prod-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/WebServerRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00001", "VolumeSize": 50, "VolumeType": "gp3", "Boot": true }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "web-server-01" },
+      { "Key": "Env", "Value": "production" },
+      { "Key": "Team", "Value": "frontend" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 1, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67802",
+    "InstanceType": "r6i.xlarge",
+    "ImageId": "ami-0c55b159cbfafe1f0",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-10-15T14:05:33.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-east-2b",
+      "Region": "us-east-2",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.2.20",
+    "PublicIpAddress": null,
+    "PrivateDnsName": "ip-10-0-2-20.us-east-2.compute.internal",
+    "PublicDnsName": null,
+    "VpcId": "vpc-0abc12345def67891",
+    "SubnetId": "subnet-0abc12345def00002",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00002", "GroupName": "db-server-sg" }
+    ],
+    "KeyName": "prod-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/DBServerRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00002", "VolumeSize": 100, "VolumeType": "gp3", "Boot": true },
+      { "DeviceName": "/dev/xvdb", "VolumeId": "vol-0abc00003", "VolumeSize": 500, "VolumeType": "io2", "Boot": false }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "db-primary-01" },
+      { "Key": "Env", "Value": "production" },
+      { "Key": "Team", "Value": "backend" },
+      { "Key": "Role", "Value": "database" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 2, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67803",
+    "InstanceType": "t3.large",
+    "ImageId": "ami-0d5d9d301c853129f",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-12-01T09:45:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "eu-west-1c",
+      "Region": "eu-west-1",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.3.30",
+    "PublicIpAddress": "34.245.112.34",
+    "PrivateDnsName": "ip-10-0-3-30.eu-west-1.compute.internal",
+    "PublicDnsName": "ec2-34-245-112-34.eu-west-1.compute.amazonaws.com",
+    "VpcId": "vpc-0abc12345def67892",
+    "SubnetId": "subnet-0abc12345def00003",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00003", "GroupName": "api-gateway-sg" }
+    ],
+    "KeyName": "prod-eu-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/APIGatewayRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00004", "VolumeSize": 30, "VolumeType": "gp3", "Boot": true }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "api-gateway-02" },
+      { "Key": "Env", "Value": "production" },
+      { "Key": "Team", "Value": "platform" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 1, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67804",
+    "InstanceType": "p3.2xlarge",
+    "ImageId": "ami-0e2b67e5e4b8c9b3a",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2026-01-20T11:00:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-west-2b",
+      "Region": "us-west-2",
+      "Tenancy": "dedicated"
+    },
+    "PrivateIpAddress": "10.0.4.40",
+    "PublicIpAddress": null,
+    "PrivateDnsName": "ip-10-0-4-40.us-west-2.compute.internal",
+    "PublicDnsName": null,
+    "VpcId": "vpc-0abc12345def67893",
+    "SubnetId": "subnet-0abc12345def00004",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00004", "GroupName": "ml-node-sg" }
+    ],
+    "KeyName": "ml-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/MLTrainingRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00005", "VolumeSize": 200, "VolumeType": "gp3", "Boot": true }
+    ],
+    "ElasticGpuAssociations": [
+      { "ElasticGpuId": "egpu-0abc00001", "ElasticGpuType": "nvidia-tesla-v100", "GpuCount": 1 }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "ml-training-node-01" },
+      { "Key": "Env", "Value": "research" },
+      { "Key": "Team", "Value": "ml" },
+      { "Key": "Project", "Value": "vision-model" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 4, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67805",
+    "InstanceType": "t3.small",
+    "ImageId": "ami-0c55b159cbfafe1f0",
+    "State": { "Code": 80, "Name": "stopped" },
+    "LaunchTime": "2025-09-10T07:30:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-east-1b",
+      "Region": "us-east-1",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.1.50",
+    "PublicIpAddress": "3.88.201.99",
+    "PrivateDnsName": "ip-10-0-1-50.ec2.internal",
+    "PublicDnsName": "ec2-3-88-201-99.compute-1.amazonaws.com",
+    "VpcId": "vpc-0abc12345def67894",
+    "SubnetId": "subnet-0abc12345def00005",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00005", "GroupName": "staging-sg" }
+    ],
+    "KeyName": "staging-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/StagingAppRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00006", "VolumeSize": 20, "VolumeType": "gp2", "Boot": true }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "staging-app-01" },
+      { "Key": "Env", "Value": "staging" },
+      { "Key": "Team", "Value": "qa" }
+    ],
+    "Monitoring": { "State": "disabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 1, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67806",
+    "InstanceType": "r6g.large",
+    "ImageId": "ami-0abcdef1234567890",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-08-22T16:15:45.000Z",
+    "Placement": {
+      "AvailabilityZone": "ap-east-1a",
+      "Region": "ap-east-1",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.5.60",
+    "PublicIpAddress": null,
+    "PrivateDnsName": "ip-10-0-5-60.ap-east-1.compute.internal",
+    "PublicDnsName": null,
+    "VpcId": "vpc-0abc12345def67895",
+    "SubnetId": "subnet-0abc12345def00006",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00006", "GroupName": "cache-server-sg" }
+    ],
+    "KeyName": "prod-apac-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/CacheServerRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00007", "VolumeSize": 30, "VolumeType": "gp3", "Boot": true }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "cache-node-redis-01" },
+      { "Key": "Env", "Value": "production" },
+      { "Key": "Team", "Value": "backend" },
+      { "Key": "Role", "Value": "cache" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "arm64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 1, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67807",
+    "InstanceType": "m5.xlarge",
+    "ImageId": "ami-0c55b159cbfafe1f0",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-07-05T12:00:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-east-1c",
+      "Region": "us-east-1",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.1.70",
+    "PublicIpAddress": null,
+    "PrivateDnsName": "ip-10-0-1-70.ec2.internal",
+    "PublicDnsName": null,
+    "VpcId": "vpc-0abc12345def67890",
+    "SubnetId": "subnet-0abc12345def00007",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00007", "GroupName": "log-aggregator-sg" }
+    ],
+    "KeyName": "prod-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/LogAggregatorRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00008", "VolumeSize": 50, "VolumeType": "gp3", "Boot": true },
+      { "DeviceName": "/dev/xvdb", "VolumeId": "vol-0abc00009", "VolumeSize": 1000, "VolumeType": "st1", "Boot": false }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "log-aggregator-01" },
+      { "Key": "Env", "Value": "ops" },
+      { "Key": "Team", "Value": "devops" },
+      { "Key": "Role", "Value": "logging" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 2, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67808",
+    "InstanceType": "t3.micro",
+    "ImageId": "ami-0c55b159cbfafe1f0",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-06-18T10:30:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-east-2c",
+      "Region": "us-east-2",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.2.80",
+    "PublicIpAddress": "18.224.201.55",
+    "PrivateDnsName": "ip-10-0-2-80.us-east-2.compute.internal",
+    "PublicDnsName": "ec2-18-224-201-55.us-east-2.compute.amazonaws.com",
+    "VpcId": "vpc-0abc12345def67891",
+    "SubnetId": "subnet-0abc12345def00008",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00008", "GroupName": "bastion-sg" }
+    ],
+    "KeyName": "prod-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/BastionRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00010", "VolumeSize": 10, "VolumeType": "gp2", "Boot": true }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "bastion-host-01" },
+      { "Key": "Env", "Value": "production" },
+      { "Key": "Team", "Value": "security" },
+      { "Key": "Role", "Value": "bastion" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 1, "ThreadsPerCore": 1 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67809",
+    "InstanceType": "c6i.2xlarge",
+    "ImageId": "ami-0c55b159cbfafe1f0",
+    "State": { "Code": 0, "Name": "pending" },
+    "LaunchTime": "2026-02-14T06:00:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "us-west-2a",
+      "Region": "us-west-2",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.4.90",
+    "PublicIpAddress": null,
+    "PrivateDnsName": "ip-10-0-4-90.us-west-2.compute.internal",
+    "PublicDnsName": null,
+    "VpcId": "vpc-0abc12345def67893",
+    "SubnetId": "subnet-0abc12345def00009",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00009", "GroupName": "worker-node-sg" }
+    ],
+    "KeyName": "prod-west-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/WorkerNodeRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00011", "VolumeSize": 100, "VolumeType": "gp3", "Boot": true }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "worker-node-03" },
+      { "Key": "Env", "Value": "production" },
+      { "Key": "Team", "Value": "platform" },
+      { "Key": "Role", "Value": "worker" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 4, "ThreadsPerCore": 2 }
+  },
+  {
+    "InstanceId": "i-0a1b2c3d4e5f67810",
+    "InstanceType": "m6i.large",
+    "ImageId": "ami-0d5d9d301c853129f",
+    "State": { "Code": 16, "Name": "running" },
+    "LaunchTime": "2025-05-30T08:00:00.000Z",
+    "Placement": {
+      "AvailabilityZone": "eu-west-4a",
+      "Region": "eu-central-1",
+      "Tenancy": "default"
+    },
+    "PrivateIpAddress": "10.0.3.100",
+    "PublicIpAddress": "18.185.77.120",
+    "PrivateDnsName": "ip-10-0-3-100.eu-central-1.compute.internal",
+    "PublicDnsName": "ec2-18-185-77-120.eu-central-1.compute.amazonaws.com",
+    "VpcId": "vpc-0abc12345def67892",
+    "SubnetId": "subnet-0abc12345def00010",
+    "SecurityGroups": [
+      { "GroupId": "sg-0abc00010", "GroupName": "monitoring-sg" }
+    ],
+    "KeyName": "prod-eu-keypair",
+    "IamInstanceProfile": { "Arn": "arn:aws:iam::123456789012:instance-profile/MonitoringRole" },
+    "BlockDeviceMappings": [
+      { "DeviceName": "/dev/xvda", "VolumeId": "vol-0abc00012", "VolumeSize": 50, "VolumeType": "gp3", "Boot": true },
+      { "DeviceName": "/dev/xvdb", "VolumeId": "vol-0abc00013", "VolumeSize": 200, "VolumeType": "st1", "Boot": false }
+    ],
+    "Tags": [
+      { "Key": "Name", "Value": "monitoring-prometheus-01" },
+      { "Key": "Env", "Value": "ops" },
+      { "Key": "Team", "Value": "devops" },
+      { "Key": "Role", "Value": "monitoring" }
+    ],
+    "Monitoring": { "State": "enabled" },
+    "Architecture": "x86_64",
+    "Platform": "Linux/UNIX",
+    "CpuOptions": { "CoreCount": 1, "ThreadsPerCore": 2 }
+  }
+]
