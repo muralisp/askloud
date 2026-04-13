@@ -18,6 +18,10 @@ Ask in plain English. Get a formatted table. Your inventory data never leaves yo
 - **Docker-ready** — ships with a Dockerfile and wrapper scripts; all cloud CLIs included
 
 ---
+## Architecture
+
+<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/fccc7bb9-2df2-4268-84bf-2c9fdb2deb1c" />
+---
 
 ## Why Askloud?
 
