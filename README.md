@@ -20,7 +20,7 @@ Ask in plain English. Get a formatted table. Your inventory data never leaves yo
 ---
 ## Architecture
 
-<img width="1024" height="559" alt="image" src="https://github.com/user-attachments/assets/fccc7bb9-2df2-4268-84bf-2c9fdb2deb1c" />
+<img width="2752" height="1536" alt="unnamed (7)" src="https://github.com/user-attachments/assets/8f675738-7b92-4bed-a060-461b6ede3f92" />
 
 ---
 
