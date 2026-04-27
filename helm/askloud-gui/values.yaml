@@ -3,7 +3,7 @@ replicaCount: 1
 # on every push to main.
 image:
   repository: "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-gui" # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-gui
-  tag: 5e0ac0c
+  tag: 603fd17
   pullPolicy: Always
 service:
   type: ClusterIP
@@ -29,7 +29,7 @@ collector:
   schedule: "0 */6 * * *"
   image:
     repository: "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-engine" # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-engine
-    tag: 5e0ac0c
+    tag: 603fd17
     pullPolicy: Always
 resources: {}
 #  requests:
