@@ -1,8 +1,8 @@
 # ── EKS Cluster ───────────────────────────────────────────────────────────────
-# Module version: 1.0.0  (see ../_modules/aws-eks/VERSION)
+# Module version: 1.0.0  (see ../../_modules/aws/eks/VERSION)
 
 module "eks" {
-  source = "../_modules/aws-eks"
+  source = "../../_modules/aws/eks"
 
   project             = var.project
   environment         = var.environment

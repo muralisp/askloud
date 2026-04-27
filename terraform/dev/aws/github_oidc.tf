@@ -1,11 +1,11 @@
 # ── GitHub Actions OIDC ───────────────────────────────────────────────────────
-# Module version: 1.0.0  (see ../_modules/aws-github-oidc/VERSION)
+# Module version: 1.0.0  (see ../../_modules/aws/github-oidc/VERSION)
 #
 # After applying, copy the github_actions_role_arn output value into
 # GitHub → Settings → Secrets → AWS_ROLE_ARN
 
 module "github_oidc" {
-  source = "../_modules/aws-github-oidc"
+  source = "../../_modules/aws/github-oidc"
 
   project     = var.project
   environment = var.environment

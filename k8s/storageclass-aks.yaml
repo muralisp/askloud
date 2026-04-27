@@ -1,0 +1,12 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azure-disk-premium
+provisioner: disk.csi.azure.com
+parameters:
+  skuName: Premium_LRS    # SSD-backed managed disk (equiv. EBS io2)
+  kind: Managed
+  cachingMode: ReadOnly
+volumeBindingMode: WaitForFirstConsumer   # volume created in the same zone as the scheduled pod
+allowVolumeExpansion: true
+reclaimPolicy: Retain

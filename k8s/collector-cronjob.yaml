@@ -32,7 +32,7 @@ spec:
                     topologyKey: kubernetes.io/hostname
           containers:
             - name: collector
-              image: ${ECR_ENGINE_URL}:${IMAGE_TAG}   # substituted by deploy-eks.sh via envsubst
+              image: ${ENGINE_IMAGE}   # substituted by deploy-*.sh via envsubst
               imagePullPolicy: Always
               command: ["python3", "askloud_collector.py", "--schedule"]
               env:

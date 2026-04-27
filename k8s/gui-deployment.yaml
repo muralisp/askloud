@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gui
-          image: ${ECR_GUI_URL}:${IMAGE_TAG}   # substituted by deploy-eks.sh via envsubst
+          image: ${GUI_IMAGE}   # substituted by deploy-*.sh via envsubst
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

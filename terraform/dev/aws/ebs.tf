@@ -1,12 +1,12 @@
 # ── EBS CSI Driver ────────────────────────────────────────────────────────────
-# Module version: 1.0.0  (see ../_modules/aws-ebs-csi/VERSION)
+# Module version: 1.0.0  (see ../../_modules/aws/ebs-csi/VERSION)
 #
 # EBS volumes are ReadWriteOnce — the GUI pod and the collector CronJob must
 # land on the same node.  The collector CronJob in k8s/collector-cronjob.yaml
 # uses podAffinity to enforce this.
 
 module "ebs_csi" {
-  source = "../_modules/aws-ebs-csi"
+  source = "../../_modules/aws/ebs-csi"
 
   project           = var.project
   environment       = var.environment

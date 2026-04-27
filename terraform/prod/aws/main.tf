@@ -1,8 +1,8 @@
 # ── VPC ───────────────────────────────────────────────────────────────────────
-# Module version: 1.0.0  (see ../_modules/aws-vpc/VERSION)
+# Module version: 1.0.0  (see ../../_modules/aws/vpc/VERSION)
 
 module "vpc" {
-  source = "../_modules/aws-vpc"
+  source = "../../_modules/aws/vpc"
 
   project              = var.project
   environment          = var.environment

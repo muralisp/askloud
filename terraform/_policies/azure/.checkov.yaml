@@ -1,0 +1,17 @@
+# Checkov configuration for Azure Terraform resources
+# Run: checkov -d terraform/dev/azure --config-file terraform/_policies/azure/.checkov.yaml
+
+framework:
+  - terraform
+
+# TODO: remove suppressions below as each control is properly implemented.
+# Starting with a deny-list approach: fail on high-severity AKS and ACR findings.
+skip-check:
+  # These will be addressed during AKS module implementation:
+  - CKV_AZURE_5    # AKS RBAC enabled
+  - CKV_AZURE_6    # AKS monitoring add-on
+  - CKV_AZURE_7    # AKS network policy
+  - CKV_AZURE_116  # AKS private cluster
+
+soft-fail: false
+compact: true

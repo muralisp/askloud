@@ -15,7 +15,9 @@ Ask in plain English. Get a formatted table. Your inventory data never leaves yo
 - **Privacy by design** — in both modes the LLM receives only your question; actual inventory data and CLI output stay on your machine
 - **Shell integration** — prefix `!` to run any shell command; append `| cmd` to pipe query output through it
 - **Automated collection** — schedule-driven data collector keeps your snapshot fresh
-- **Docker-ready** — ships with a Dockerfile and wrapper scripts; all cloud CLIs included
+- **Web GUI** — Django + Plotly chat interface at `localhost:8000`
+- **Kubernetes-ready** — production deployments on AWS EKS, Azure AKS, and GCP GKE via a single deploy script per cloud
+- **GitOps CI/CD** — GitHub Actions builds and pushes images; ArgoCD auto-syncs the Helm release
 
 ---
 ## Architecture
@@ -84,11 +86,15 @@ Docker is the easiest way to get started. No Python setup, no CLI installations 
 # 1. Set your API key
 export ANTHROPIC_API_KEY=your_key_here
 
-# 2. Run
+# 2. Run the CLI
 ./run_askloud.sh               # interactive snapshot mode
 ./run_askloud.sh --live        # interactive live mode
 ./run_askloud.sh "list stopped instances in production"
 ./run_askloud_collector.sh --schedule
+
+# 3. Or run the web GUI
+docker-compose up gui
+# open http://localhost:8000
 ```
 
 Your `data/` and `config/` directories are mounted into the container automatically. Cloud credentials are passed in read-only from `~/.aws`, `~/.azure`, and `~/.config/gcloud`.
@@ -97,10 +103,8 @@ Your `data/` and `config/` directories are mounted into the container automatica
 
 ## Running Without Docker
 
-If you prefer to run the Python scripts directly, set up the environment first:
-
 ```bash
-pip install anthropic jmespath
+pip install anthropic jmespath django whitenoise gunicorn
 export ANTHROPIC_API_KEY=your_key_here
 
 # For live mode and snapshot refresh, configure the cloud CLIs:
@@ -109,13 +113,15 @@ az login          # Azure
 gcloud auth login # GCP
 ```
 
-Then run:
-
 ```bash
 python3 askloud.py               # interactive snapshot mode
 python3 askloud.py --live        # interactive live mode
 python3 askloud.py "list stopped instances in production"
 python3 askloud_collector.py --schedule
+
+# Web GUI
+cd askloud_gui && python manage.py runserver
+# open http://localhost:8000
 ```
 
 ---
@@ -233,7 +239,101 @@ Define what to collect and how often in `config/collection_schedule.json`:
 }
 ```
 
-AWS `--profile` is auto-injected from the account folder name. Add a cron entry to run `--schedule` hourly.
+AWS `--profile` is auto-injected from the account folder name. Add a cron entry to run `--schedule` hourly, or use the Kubernetes CronJob (see below).
+
+---
+
+## Kubernetes Deployment
+
+Askloud ships with deploy scripts and Terraform for production deployments on all three major clouds.
+
+### One-command deploy
+
+```bash
+# AWS EKS
+export ANTHROPIC_API_KEY=...
+./deploy-eks.sh dev          # or prod
+
+# Azure AKS
+./deploy-aks.sh dev
+
+# GCP GKE
+./deploy-gke.sh dev
+```
+
+Each script:
+1. Reads cluster and registry URLs from **Terraform outputs**
+2. Builds and pushes both Docker images (`askloud-gui`, `askloud-engine`) to the cloud registry
+3. Applies Kubernetes manifests (namespace, StorageClass, PVC, Ingress, Secrets)
+4. Deploys the GUI `Deployment` and collector `CronJob`
+5. Waits for rollout, then seeds local `data/` into the PVC
+
+Optional flags:
+```bash
+IMAGE_TAG=v1.2.3 ./deploy-eks.sh dev   # pin a specific tag
+TF_APPLY=1 ./deploy-eks.sh dev         # also run terraform apply first
+```
+
+### Storage
+
+| Cloud | StorageClass | Provisioner |
+|---|---|---|
+| AWS EKS | `ebs-io2` | `ebs.csi.aws.com` (io2, 3000 IOPS) |
+| Azure AKS | `azure-disk-premium` | `disk.csi.azure.com` (Premium_LRS) |
+| GCP GKE | `gce-pd-ssd` | `pd.csi.storage.gke.io` (pd-ssd) |
+
+All use `ReadWriteOnce` + `WaitForFirstConsumer`. The collector CronJob has `podAffinity` to schedule on the same node as the GUI pod so both can mount the same volume.
+
+### Access
+
+After deployment, the GUI and ArgoCD are both reachable through a single Nginx LoadBalancer:
+
+```
+http://<LB-hostname-or-IP>/         → Askloud GUI
+http://<LB-hostname-or-IP>/argocd   → ArgoCD UI
+```
+
+---
+
+## CI/CD
+
+Every push to `main` triggers the GitHub Actions workflow (`.github/workflows/deploy.yml`):
+
+1. **OIDC auth** — exchanges a GitHub token for short-lived AWS credentials (no stored secrets)
+2. **Build & push** — builds both Docker images tagged with the short git SHA and pushes to ECR
+3. **Update values** — uses `yq` to write the new image tag into `helm/askloud-gui/values.yaml` and commits back with `[skip ci]`
+4. **ArgoCD sync** — detects the values.yaml change and rolls out the new image automatically
+
+ArgoCD is configured with `server.rootpath: /argocd` and `server.insecure: true` so it works behind the Nginx path-prefix ingress without a dedicated LoadBalancer.
+
+---
+
+## Terraform
+
+Multi-cloud modular structure under `terraform/`:
+
+```
+terraform/
+  _modules/
+    aws/     vpc/  eks/  ebs-csi/  ecr/  github-oidc/     ← implemented
+    azure/   network/  aks/  acr/  github-oidc/            ← scaffold
+    gcp/     vpc/  gke/  artifact-registry/  github-oidc/  ← scaffold
+  _policies/
+    required_tags.rego          # OPA/Conftest — enforces tags on all clouds
+    aws/  .tflint.hcl  .checkov.yaml
+    azure/ .tflint.hcl  .checkov.yaml
+    gcp/   .tflint.hcl  .checkov.yaml
+  dev/
+    aws/    ← active (ap-south-1, t3.medium × 2)
+    azure/  ← scaffold
+    gcp/    ← scaffold
+  prod/
+    aws/    ← active (ap-south-1, t3.large × 3, multi-AZ NAT)
+    azure/  ← scaffold
+    gcp/    ← scaffold
+```
+
+Tagging policy is enforced shift-left: `aws_default_tags` / `azurerm default_tags` / `google default_labels` inject the four required labels (`Project`, `Environment`, `ManagedBy`, `Owner`) at the provider level. The OPA policy is the CI gate that confirms no resource slips through.
 
 ---
 

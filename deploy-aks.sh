@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# deploy-eks.sh — Build images, push to ECR, and deploy Askloud to EKS.
+# deploy-aks.sh — Build images, push to ACR, and deploy Askloud to AKS.
 #
 # Usage:
-#   ./deploy-eks.sh dev                        # deploy to dev environment
-#   ./deploy-eks.sh prod                       # deploy to prod environment
-#   IMAGE_TAG=v1.2.3 ./deploy-eks.sh dev       # pin a specific image tag
-#   TF_APPLY=1 ./deploy-eks.sh dev             # also run terraform apply
+#   ./deploy-aks.sh dev                        # deploy to dev environment
+#   ./deploy-aks.sh prod                       # deploy to prod environment
+#   IMAGE_TAG=v1.2.3 ./deploy-aks.sh dev       # pin a specific image tag
+#   TF_APPLY=1 ./deploy-aks.sh dev             # also run terraform apply
 set -euo pipefail
 
 # ── Arguments & defaults ──────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ fi
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 TF_APPLY="${TF_APPLY:-0}"
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
-TF_DIR="$REPO_ROOT/terraform/$ENV"
+TF_DIR="$REPO_ROOT/terraform/$ENV/azure"
 NAMESPACE=askloud
 
 # ── Colour helpers ────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ red()    { echo -e "\033[31m$*\033[0m"; }
 step()   { echo; green "==> $*"; }
 
 # ── Pre-flight checks ─────────────────────────────────────────────────────────
-for cmd in aws terraform kubectl docker envsubst; do
+for cmd in az terraform kubectl docker envsubst; do
   if ! command -v "$cmd" &>/dev/null; then
     red "ERROR: '$cmd' not found. Install it and re-run."
     exit 1
@@ -45,47 +45,55 @@ if [[ -z "${ANTHROPIC_API_KEY:-}" ]]; then
   exit 1
 fi
 
+# Verify az CLI is logged in
+if ! az account show &>/dev/null; then
+  red "ERROR: Not logged in to Azure CLI. Run: az login"
+  exit 1
+fi
+
 # ── Optional: run terraform apply ─────────────────────────────────────────────
 if [[ "$TF_APPLY" == "1" ]]; then
-  step "Running terraform init + apply for $ENV"
+  step "Running terraform init + apply for $ENV/azure"
   terraform -chdir="$TF_DIR" init
   terraform -chdir="$TF_DIR" apply -auto-approve
 fi
 
 # ── Read terraform outputs ────────────────────────────────────────────────────
-step "Reading Terraform outputs for $ENV"
-ECR_GUI_URL=$(terraform -chdir="$TF_DIR" output -raw ecr_gui_url)
-ECR_ENGINE_URL=$(terraform -chdir="$TF_DIR" output -raw ecr_engine_url)
+step "Reading Terraform outputs for $ENV/azure"
+ACR_GUI_URL=$(terraform -chdir="$TF_DIR" output -raw acr_gui_url)
+ACR_ENGINE_URL=$(terraform -chdir="$TF_DIR" output -raw acr_engine_url)
+ACR_NAME=$(terraform -chdir="$TF_DIR" output -raw acr_name)
 CLUSTER_NAME=$(terraform -chdir="$TF_DIR" output -raw cluster_name)
-AWS_REGION=$(terraform -chdir="$TF_DIR" output -raw configure_kubectl | grep -oP '(?<=--region )\S+')
+RESOURCE_GROUP=$(terraform -chdir="$TF_DIR" output -raw resource_group_name)
 
-green "  Cluster    : $CLUSTER_NAME"
-green "  ECR GUI    : $ECR_GUI_URL"
-green "  ECR Engine : $ECR_ENGINE_URL"
-green "  Image tag  : $IMAGE_TAG"
+green "  Cluster        : $CLUSTER_NAME"
+green "  Resource Group : $RESOURCE_GROUP"
+green "  ACR GUI        : $ACR_GUI_URL"
+green "  ACR Engine     : $ACR_ENGINE_URL"
+green "  Image tag      : $IMAGE_TAG"
 
 # ── Configure kubectl ─────────────────────────────────────────────────────────
 step "Updating kubeconfig for $CLUSTER_NAME"
-aws eks update-kubeconfig --region "$AWS_REGION" --name "$CLUSTER_NAME"
+az aks get-credentials \
+  --resource-group "$RESOURCE_GROUP" \
+  --name "$CLUSTER_NAME" \
+  --overwrite-existing
 
-# ── Authenticate Docker to ECR ────────────────────────────────────────────────
-step "Authenticating Docker to ECR"
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-aws ecr get-login-password --region "$AWS_REGION" \
-  | docker login --username AWS --password-stdin \
-    "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+# ── Authenticate Docker to ACR ────────────────────────────────────────────────
+step "Authenticating Docker to ACR"
+az acr login --name "$ACR_NAME"
 
 # ── Build and push images ─────────────────────────────────────────────────────
 step "Building askloud-engine image"
-docker build -t "${ECR_ENGINE_URL}:${IMAGE_TAG}" "$REPO_ROOT"
+docker build -t "${ACR_ENGINE_URL}:${IMAGE_TAG}" "$REPO_ROOT"
 
 step "Building askloud-gui image"
-docker build -t "${ECR_GUI_URL}:${IMAGE_TAG}" \
+docker build -t "${ACR_GUI_URL}:${IMAGE_TAG}" \
   -f "$REPO_ROOT/askloud_gui/Dockerfile" "$REPO_ROOT"
 
-step "Pushing images to ECR"
-docker push "${ECR_ENGINE_URL}:${IMAGE_TAG}"
-docker push "${ECR_GUI_URL}:${IMAGE_TAG}"
+step "Pushing images to ACR"
+docker push "${ACR_ENGINE_URL}:${IMAGE_TAG}"
+docker push "${ACR_GUI_URL}:${IMAGE_TAG}"
 
 # ── Apply Kubernetes manifests ────────────────────────────────────────────────
 step "Installing Metrics Server (enables kubectl top)"
@@ -93,8 +101,8 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 
 step "Applying namespace and storage"
 kubectl apply -f "$REPO_ROOT/k8s/namespace.yaml"
-kubectl apply -f "$REPO_ROOT/k8s/storageclass.yaml"
-kubectl apply -f "$REPO_ROOT/k8s/pvc.yaml"
+kubectl apply -f "$REPO_ROOT/k8s/storageclass-aks.yaml"
+kubectl apply -f "$REPO_ROOT/k8s/pvc-aks.yaml"
 kubectl apply -f "$REPO_ROOT/k8s/ingress.yaml"
 
 # ── Create/update application secrets ────────────────────────────────────────
@@ -173,10 +181,10 @@ EOF
   yellow "No ~/.config/gcloud found — created empty cloud-creds-gcp secret"
 fi
 
-# ── Deploy workloads (envsubst injects ECR URLs and IMAGE_TAG) ────────────────
+# ── Deploy workloads (envsubst injects registry URLs) ─────────────────────────
 step "Deploying askloud-gui"
-export GUI_IMAGE="${ECR_GUI_URL}:${IMAGE_TAG}"
-export ENGINE_IMAGE="${ECR_ENGINE_URL}:${IMAGE_TAG}"
+export GUI_IMAGE="${ACR_GUI_URL}:${IMAGE_TAG}"
+export ENGINE_IMAGE="${ACR_ENGINE_URL}:${IMAGE_TAG}"
 envsubst < "$REPO_ROOT/k8s/gui-deployment.yaml" | kubectl apply -f -
 kubectl apply -f "$REPO_ROOT/k8s/gui-service.yaml"
 
@@ -188,9 +196,6 @@ step "Waiting for askloud-gui rollout (up to 5 min)"
 kubectl rollout status deployment/askloud-gui -n "$NAMESPACE" --timeout=300s
 
 # ── Seed local data/ into the PVC ────────────────────────────────────────────
-# EBS PVC starts empty; copy the local snapshot data into the running pod so
-# the engine has something to query on first boot.
-# Skipped automatically if data/ is empty or does not exist.
 if [[ -d "$REPO_ROOT/data" && -n "$(ls -A "$REPO_ROOT/data" 2>/dev/null)" ]]; then
   step "Seeding local data/ into pod PVC"
   GUI_POD=$(kubectl get pod -l app=askloud-gui -n "$NAMESPACE" \
@@ -204,14 +209,14 @@ fi
 # ── Print access URL ──────────────────────────────────────────────────────────
 echo
 green "============================================================"
-green "  Askloud is running on EKS ($ENV)"
+green "  Askloud is running on AKS ($ENV)"
 green "============================================================"
 echo
-LB_HOSTNAME=$(kubectl get svc ingress-nginx-controller -n ingress-nginx \
-  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "<pending>")
-echo "  GUI URL    : http://$LB_HOSTNAME/"
-echo "  ArgoCD URL : http://$LB_HOSTNAME/argocd"
-echo "  (NLB may take 1-2 min to propagate)"
+LB_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx \
+  -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "<pending>")
+echo "  GUI URL    : http://$LB_IP/"
+echo "  ArgoCD URL : http://$LB_IP/argocd"
+echo "  (Azure LB may take 1-2 min to get a public IP)"
 echo
 echo "  Useful commands:"
 echo "    kubectl get all -n $NAMESPACE"

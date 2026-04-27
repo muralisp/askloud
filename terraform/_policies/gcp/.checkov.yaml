@@ -1,0 +1,15 @@
+# Checkov configuration for GCP Terraform resources
+# Run: checkov -d terraform/dev/gcp --config-file terraform/_policies/gcp/.checkov.yaml
+
+framework:
+  - terraform
+
+# TODO: remove suppressions as each GKE/AR control is properly implemented.
+skip-check:
+  - CKV_GCP_24   # GKE master authorized networks
+  - CKV_GCP_25   # GKE private cluster
+  - CKV_GCP_65   # GKE workload identity
+  - CKV_GCP_69   # GKE release channel
+
+soft-fail: false
+compact: true

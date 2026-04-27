@@ -1,8 +1,8 @@
 # ── EBS CSI Driver ────────────────────────────────────────────────────────────
-# Module version: 1.0.0  (see ../_modules/aws-ebs-csi/VERSION)
+# Module version: 1.0.0  (see ../../_modules/aws/ebs-csi/VERSION)
 
 module "ebs_csi" {
-  source = "../_modules/aws-ebs-csi"
+  source = "../../_modules/aws/ebs-csi"
 
   project           = var.project
   environment       = var.environment

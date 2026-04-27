@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gce-pd-ssd
+provisioner: pd.csi.storage.gke.io
+parameters:
+  type: pd-ssd         # SSD persistent disk (equiv. EBS io2)
+  replication-type: none
+volumeBindingMode: WaitForFirstConsumer   # volume created in the same zone as the scheduled pod
+allowVolumeExpansion: true
+reclaimPolicy: Retain

@@ -1,8 +1,8 @@
 # ── GitHub Actions OIDC ───────────────────────────────────────────────────────
-# Module version: 1.0.0  (see ../_modules/aws-github-oidc/VERSION)
+# Module version: 1.0.0  (see ../../_modules/aws/github-oidc/VERSION)
 
 module "github_oidc" {
-  source = "../_modules/aws-github-oidc"
+  source = "../../_modules/aws/github-oidc"
 
   project     = var.project
   environment = var.environment
