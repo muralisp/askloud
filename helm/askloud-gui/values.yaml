@@ -20,6 +20,7 @@ secrets:
   gcp: cloud-creds-gcp
 persistence:
   enabled: true
+  existingClaim: "askloud-data"   # reuse the PVC created by deploy-eks.sh; set to "" to let Helm create one
   storageClassName: ebs-io2
   size: 10Gi
 # Collector CronJob — image updated by CI alongside the GUI image

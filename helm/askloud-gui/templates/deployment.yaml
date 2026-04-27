@@ -71,7 +71,7 @@ spec:
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ include "askloud-gui.fullname" . }}-data
+            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "askloud-gui.fullname" .)) }}
         {{- end }}
         - name: aws-creds
           secret:
