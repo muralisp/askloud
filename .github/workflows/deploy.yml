@@ -7,6 +7,8 @@ on:
       - "helm/askloud-gui/values.yaml"  # avoid re-triggering on the bot's own commit
       - "**.md"
       - "terraform/**"
+    tags:
+      - "v*"                            # v1.0.0, v1.2.3-rc1, etc. → prod deploy
   workflow_dispatch:
     inputs:
       environment:
@@ -27,6 +29,17 @@ jobs:
     name: Build → Push ECR → Update Helm
     runs-on: ubuntu-latest
 
+    # Resolve target environment:
+    #   v* tag  → prod
+    #   main    → dev
+    #   manual  → whatever the input says
+    env:
+      TARGET_ENV: >-
+        ${{
+          startsWith(github.ref, 'refs/tags/v') && 'prod' ||
+          github.event.inputs.environment || 'dev'
+        }}
+
     steps:
       # ── Checkout ─────────────────────────────────────────────────────────────
       - name: Checkout
@@ -46,10 +59,16 @@ jobs:
         id: ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # ── Derive image tag from git SHA ──────────────────────────────────────
+      # ── Derive image tag ───────────────────────────────────────────────────
+      # Tags: v1.2.3 → "v1.2.3"; branch push → short SHA (e.g. "a1b2c3d")
       - name: Set image tag
         id: tag
-        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "value=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          fi
 
       # ── Build and push both images ─────────────────────────────────────────
       - name: Build and push askloud-engine
@@ -68,7 +87,6 @@ jobs:
           tags: ${{ steps.ecr.outputs.registry }}/askloud-gui:${{ steps.tag.outputs.value }}
 
       # ── Update Helm values.yaml with new image ─────────────────────────────
-      # yq edits YAML safely; sed would break on URLs containing slashes.
       - name: Install yq
         uses: mikefarah/yq@v4.44.3
 
@@ -83,14 +101,11 @@ jobs:
           yq e ".collector.image.tag         = \"${TAG}\""                       -i helm/askloud-gui/values.yaml
 
       # ── Commit the updated values.yaml so ArgoCD picks it up ──────────────
-      # [skip ci] prevents this commit from re-triggering the workflow.
-      # GitHub also blocks GITHUB_TOKEN-authored pushes from re-triggering,
-      # but the explicit flag is a belt-and-suspenders guard.
       - name: Commit and push updated Helm values
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add helm/askloud-gui/values.yaml
           git diff --staged --quiet \
-            || git commit -m "ci: deploy ${{ steps.tag.outputs.value }} [skip ci]"
+            || git commit -m "ci: deploy ${{ steps.tag.outputs.value }} to ${{ env.TARGET_ENV }} [skip ci]"
           git push
