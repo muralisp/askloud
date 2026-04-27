@@ -1,42 +1,35 @@
 replicaCount: 1
-
 # GUI image — repository and tag are updated automatically by GitHub Actions
 # on every push to main.
 image:
-  repository: ""   # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-gui
-  tag: latest
+  repository: "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-gui" # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-gui
+  tag: c165055
   pullPolicy: Always
-
 service:
   type: ClusterIP
   port: 80
-
 env:
   djangoDebug: "false"
   askloudBaseDir: /app
-
 # Names of pre-existing Kubernetes Secrets.  deploy-eks.sh (or ArgoCD
 # pre-sync hooks) creates these before the Helm release is installed.
 secrets:
-  askloud: askloud-secrets    # ANTHROPIC_API_KEY, DJANGO_SECRET_KEY
+  askloud: askloud-secrets # ANTHROPIC_API_KEY, DJANGO_SECRET_KEY
   aws: cloud-creds-aws
   azure: cloud-creds-azure
   gcp: cloud-creds-gcp
-
 persistence:
   enabled: true
   storageClassName: ebs-io2
   size: 10Gi
-
 # Collector CronJob — image updated by CI alongside the GUI image
 collector:
   enabled: true
   schedule: "0 */6 * * *"
   image:
-    repository: ""   # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-engine
-    tag: latest
+    repository: "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-engine" # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-engine
+    tag: c165055
     pullPolicy: Always
-
 resources: {}
 #  requests:
 #    cpu: 250m
@@ -49,7 +42,6 @@ readinessProbe:
   path: /api/status/
   initialDelaySeconds: 10
   periodSeconds: 5
-
 livenessProbe:
   path: /api/status/
   initialDelaySeconds: 20
