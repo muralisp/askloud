@@ -1,0 +1,2 @@
+{{- /* Static PV removed: EBS io2 dynamic provisioning via StorageClass ebs-io2 handles
+       volume creation.  No static PersistentVolume is needed. */ -}}

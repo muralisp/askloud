@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: askloud-gui
+  namespace: askloud
+  labels:
+    app: askloud-gui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: askloud-gui
+  template:
+    metadata:
+      labels:
+        app: askloud-gui
+    spec:
+      containers:
+        - name: gui
+          image: ${ECR_GUI_URL}:${IMAGE_TAG}   # substituted by deploy-eks.sh via envsubst
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ASKLOUD_BASE_DIR
+              value: /app
+            - name: DJANGO_DEBUG
+              value: "false"
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: askloud-secrets
+                  key: ANTHROPIC_API_KEY
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: askloud-secrets
+                  key: DJANGO_SECRET_KEY
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: aws-creds
+              mountPath: /root/.aws
+              readOnly: true
+            - name: azure-creds
+              mountPath: /root/.azure
+              readOnly: true
+            - name: gcp-creds
+              mountPath: /root/.config/gcloud
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /api/status/
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/status/
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 15
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: askloud-data
+        - name: aws-creds
+          secret:
+            secretName: cloud-creds-aws
+            optional: true
+        - name: azure-creds
+          secret:
+            secretName: cloud-creds-azure
+            optional: true
+        - name: gcp-creds
+          secret:
+            secretName: cloud-creds-gcp
+            optional: true

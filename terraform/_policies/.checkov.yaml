@@ -1,0 +1,24 @@
+# Checkov configuration — run from repo root or copy into each environment dir.
+# Run: checkov -d terraform/dev --config-file terraform/_policies/.checkov.yaml
+
+compact: true
+output: cli
+framework:
+  - terraform
+
+check:
+  - CKV_AWS_8    # EC2: require IMDSv2
+  - CKV_AWS_58   # EKS: secrets encryption at rest
+  - CKV_AWS_79   # EKS: IMDSv2 on worker nodes
+  - CKV_AWS_174  # ECR: image scanning on push
+  - CKV_AWS_136  # ECR: encryption enabled
+  - CKV_AWS_119  # EBS: encryption at rest
+  - CKV_AWS_144  # S3 (tfstate): versioning enabled
+  - CKV_AWS_145  # S3 (tfstate): encryption enabled
+  - CKV2_AWS_62  # S3 (tfstate): event notifications disabled is fine — suppress via skip
+  - CKV_AWS_18   # S3: access logging
+
+soft-fail-on:
+  # Downgrade public-endpoint check to warning — dev may need public access for
+  # bootstrapping; prod should hard-fail by removing it from this list.
+  - CKV_AWS_58

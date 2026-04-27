@@ -1,0 +1,96 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "helm/askloud-gui/values.yaml"  # avoid re-triggering on the bot's own commit
+      - "**.md"
+      - "terraform/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        type: choice
+        options: [dev, prod]
+        default: dev
+
+permissions:
+  id-token: write   # required for OIDC token
+  contents: write   # required to commit updated values.yaml back
+
+env:
+  AWS_REGION: ap-south-1
+
+jobs:
+  build-push-update:
+    name: Build → Push ECR → Update Helm
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ─────────────────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── AWS auth via OIDC (no static credentials) ─────────────────────────
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ── ECR login ─────────────────────────────────────────────────────────
+      - name: Login to Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Derive image tag from git SHA ──────────────────────────────────────
+      - name: Set image tag
+        id: tag
+        run: echo "value=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      # ── Build and push both images ─────────────────────────────────────────
+      - name: Build and push askloud-engine
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/askloud-engine:${{ steps.tag.outputs.value }}
+
+      - name: Build and push askloud-gui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: askloud_gui/Dockerfile
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/askloud-gui:${{ steps.tag.outputs.value }}
+
+      # ── Update Helm values.yaml with new image ─────────────────────────────
+      # yq edits YAML safely; sed would break on URLs containing slashes.
+      - name: Install yq
+        uses: mikefarah/yq@v4.44.3
+
+      - name: Update image repository and tag in values.yaml
+        run: |
+          REGISTRY="${{ steps.ecr.outputs.registry }}"
+          TAG="${{ steps.tag.outputs.value }}"
+
+          yq e ".image.repository            = \"${REGISTRY}/askloud-gui\""     -i helm/askloud-gui/values.yaml
+          yq e ".image.tag                   = \"${TAG}\""                       -i helm/askloud-gui/values.yaml
+          yq e ".collector.image.repository  = \"${REGISTRY}/askloud-engine\""  -i helm/askloud-gui/values.yaml
+          yq e ".collector.image.tag         = \"${TAG}\""                       -i helm/askloud-gui/values.yaml
+
+      # ── Commit the updated values.yaml so ArgoCD picks it up ──────────────
+      # [skip ci] prevents this commit from re-triggering the workflow.
+      # GitHub also blocks GITHUB_TOKEN-authored pushes from re-triggering,
+      # but the explicit flag is a belt-and-suspenders guard.
+      - name: Commit and push updated Helm values
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add helm/askloud-gui/values.yaml
+          git diff --staged --quiet \
+            || git commit -m "ci: deploy ${{ steps.tag.outputs.value }} [skip ci]"
+          git push

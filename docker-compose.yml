@@ -1,0 +1,25 @@
+services:
+  gui:
+    build:
+      context: .
+      dockerfile: askloud_gui/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      ASKLOUD_BASE_DIR: /app
+      DJANGO_DEBUG: "true"
+      # Set a strong secret key for production use
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-askloud-change-me-in-production}
+      # Anthropic API key for LLM queries
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    volumes:
+      # Source code — mounted so changes are picked up without rebuild
+      - ./askloud_gui:/app/askloud_gui
+      - ./askloud:/app/askloud
+      # Snapshot data (read-write so the collector can refresh it)
+      - ./data:/app/data
+      # Cloud credentials for live-query mode — mount from host
+      - ${HOME}/.aws:/root/.aws:ro
+      - ${HOME}/.azure:/root/.azure:ro
+      - ${HOME}/.config/gcloud:/root/.config/gcloud:ro
+    restart: unless-stopped

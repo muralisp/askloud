@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: askloud-gui
+  namespace: askloud
+  labels:
+    app: askloud-gui
+spec:
+  type: ClusterIP
+  selector:
+    app: askloud-gui
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000

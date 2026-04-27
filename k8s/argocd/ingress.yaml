@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server
+  namespace: argocd
+  annotations:
+    # ArgoCD runs in insecure (HTTP) mode — Nginx terminates TLS at the edge.
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /argocd
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80

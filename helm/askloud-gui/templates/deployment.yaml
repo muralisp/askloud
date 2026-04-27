@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "askloud-gui.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "askloud-gui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "askloud-gui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "askloud-gui.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: gui
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: ASKLOUD_BASE_DIR
+              value: {{ .Values.env.askloudBaseDir | quote }}
+            - name: DJANGO_DEBUG
+              value: {{ .Values.env.djangoDebug | quote }}
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.askloud }}
+                  key: ANTHROPIC_API_KEY
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.askloud }}
+                  key: DJANGO_SECRET_KEY
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /app/data
+            {{- end }}
+            - name: aws-creds
+              mountPath: /root/.aws
+              readOnly: true
+            - name: azure-creds
+              mountPath: /root/.azure
+              readOnly: true
+            - name: gcp-creds
+              mountPath: /root/.config/gcloud
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: 8000
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              port: 8000
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "askloud-gui.fullname" . }}-data
+        {{- end }}
+        - name: aws-creds
+          secret:
+            secretName: {{ .Values.secrets.aws }}
+            optional: true
+        - name: azure-creds
+          secret:
+            secretName: {{ .Values.secrets.azure }}
+            optional: true
+        - name: gcp-creds
+          secret:
+            secretName: {{ .Values.secrets.gcp }}
+            optional: true

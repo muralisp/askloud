@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: askloud-data
+  namespace: askloud
+spec:
+  accessModes:
+    - ReadWriteOnce    # EBS is single-node; GUI and collector share via podAffinity
+  storageClassName: ebs-io2
+  resources:
+    requests:
+      storage: 10Gi

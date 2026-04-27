@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+  namespace: argocd
+data:
+  # Disable ArgoCD's built-in TLS — Nginx Ingress handles it at the edge.
+  server.insecure: "true"
+  # All UI and API paths are served under /argocd so the Ingress path prefix
+  # forwards correctly without any rewrite rules.
+  server.rootpath: "/argocd"

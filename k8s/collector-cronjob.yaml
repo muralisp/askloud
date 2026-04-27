@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: askloud-collector
+  namespace: askloud
+  labels:
+    app: askloud-collector
+spec:
+  schedule: "0 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: askloud-collector
+        spec:
+          restartPolicy: OnFailure
+          # EBS volumes are ReadWriteOnce — this affinity rule strongly prefers
+          # scheduling the collector on the same node as the GUI pod, which already
+          # holds the PVC mount.
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        app: askloud-gui
+                    topologyKey: kubernetes.io/hostname
+          containers:
+            - name: collector
+              image: ${ECR_ENGINE_URL}:${IMAGE_TAG}   # substituted by deploy-eks.sh via envsubst
+              imagePullPolicy: Always
+              command: ["python3", "askloud_collector.py", "--schedule"]
+              env:
+                - name: ANTHROPIC_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: askloud-secrets
+                      key: ANTHROPIC_API_KEY
+              volumeMounts:
+                - name: data
+                  mountPath: /app/data
+                - name: aws-creds
+                  mountPath: /root/.aws
+                  readOnly: true
+                - name: azure-creds
+                  mountPath: /root/.azure
+                  readOnly: true
+                - name: gcp-creds
+                  mountPath: /root/.config/gcloud
+                  readOnly: true
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: askloud-data
+            - name: aws-creds
+              secret:
+                secretName: cloud-creds-aws
+                optional: true
+            - name: azure-creds
+              secret:
+                secretName: cloud-creds-azure
+                optional: true
+            - name: gcp-creds
+              secret:
+                secretName: cloud-creds-gcp
+                optional: true

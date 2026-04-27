@@ -1,0 +1,145 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+      meta.helm.sh/release-name: askloud
+      meta.helm.sh/release-namespace: askloud
+    creationTimestamp: "2026-04-25T13:31:29Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/instance: askloud
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: askloud-gui
+      app.kubernetes.io/version: 1.0.0
+      helm.sh/chart: askloud-gui-0.1.0
+    name: askloud-askloud-gui
+    namespace: askloud
+    resourceVersion: "20411"
+    uid: 46eb2e99-2016-4619-a66a-2dba0d99bffd
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: askloud
+        app.kubernetes.io/name: askloud-gui
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: askloud
+          app.kubernetes.io/name: askloud-gui
+      spec:
+        containers:
+        - env:
+          - name: ASKLOUD_BASE_DIR
+            value: /app
+          - name: DJANGO_DEBUG
+            value: "true"
+          - name: ANTHROPIC_API_KEY
+            valueFrom:
+              secretKeyRef:
+                key: ANTHROPIC_API_KEY
+                name: askloud-secrets
+          - name: DJANGO_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                key: DJANGO_SECRET_KEY
+                name: askloud-secrets
+          image: askloud-gui:latest
+          imagePullPolicy: Never
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/status/
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: gui
+          ports:
+          - containerPort: 8000
+            name: http
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/status/
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /app/data
+            name: data
+          - mountPath: /root/.aws
+            name: aws-creds
+            readOnly: true
+          - mountPath: /root/.azure
+            name: azure-creds
+            readOnly: true
+          - mountPath: /root/.config/gcloud
+            name: gcp-creds
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: askloud-askloud-gui-data
+        - name: aws-creds
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: cloud-creds-aws
+        - name: azure-creds
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: cloud-creds-azure
+        - name: gcp-creds
+          secret:
+            defaultMode: 420
+            optional: true
+            secretName: cloud-creds-gcp
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2026-04-25T13:31:42Z"
+      lastUpdateTime: "2026-04-25T13:31:42Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2026-04-25T13:31:29Z"
+      lastUpdateTime: "2026-04-25T13:31:42Z"
+      message: ReplicaSet "askloud-askloud-gui-78b4b975cf" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    terminatingReplicas: 0
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""

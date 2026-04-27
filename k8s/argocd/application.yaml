@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: askloud
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.io  # cascade-delete k8s resources when app is removed
+spec:
+  project: default
+
+  source:
+    # Replace with your GitHub repository URL
+    repoURL: https://github.com/muralisp/askloud.git
+    targetRevision: main
+    path: helm/askloud-gui
+    helm:
+      releaseName: askloud
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: askloud
+
+  syncPolicy:
+    automated:
+      prune: true      # remove k8s resources deleted from Helm chart
+      selfHeal: true   # revert manual kubectl changes to match git state
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -1,0 +1,74 @@
+{{- if .Values.collector.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "askloud-gui.fullname" . }}-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "askloud-gui.labels" . | nindent 4 }}
+    app.kubernetes.io/component: collector
+spec:
+  schedule: {{ .Values.collector.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "askloud-gui.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: collector
+        spec:
+          restartPolicy: OnFailure
+          # EBS is ReadWriteOnce — prefer the same node as the GUI pod so both
+          # can mount the PVC simultaneously.
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        {{- include "askloud-gui.selectorLabels" . | nindent 24 }}
+                    topologyKey: kubernetes.io/hostname
+          containers:
+            - name: collector
+              image: "{{ .Values.collector.image.repository }}:{{ .Values.collector.image.tag }}"
+              imagePullPolicy: {{ .Values.collector.image.pullPolicy }}
+              command: ["python3", "askloud_collector.py", "--schedule"]
+              env:
+                - name: ANTHROPIC_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.secrets.askloud }}
+                      key: ANTHROPIC_API_KEY
+              volumeMounts:
+                - name: data
+                  mountPath: /app/data
+                - name: aws-creds
+                  mountPath: /root/.aws
+                  readOnly: true
+                - name: azure-creds
+                  mountPath: /root/.azure
+                  readOnly: true
+                - name: gcp-creds
+                  mountPath: /root/.config/gcloud
+                  readOnly: true
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: {{ include "askloud-gui.fullname" . }}-data
+            - name: aws-creds
+              secret:
+                secretName: {{ .Values.secrets.aws }}
+                optional: true
+            - name: azure-creds
+              secret:
+                secretName: {{ .Values.secrets.azure }}
+                optional: true
+            - name: gcp-creds
+              secret:
+                secretName: {{ .Values.secrets.gcp }}
+                optional: true
+{{- end }}

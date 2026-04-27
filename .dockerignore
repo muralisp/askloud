@@ -5,6 +5,12 @@ __pycache__/
 *.pyc
 *.pyo
 *.bak
+scripts.bak/
 .git/
 tests/
 *.log
+
+# Never bake credentials or env files into the image
+.env
+*.env
+**/.env

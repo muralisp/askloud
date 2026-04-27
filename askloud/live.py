@@ -18,6 +18,7 @@ import os
 import json
 import subprocess
 import configparser
+from datetime import date
 
 import jmespath
 
@@ -50,6 +51,8 @@ def get_aws_profiles() -> list:
 
 def build_live_system_prompt(profiles: list) -> str:
     profile_list = "\n".join(f"  - {p}" for p in profiles) if profiles else "  (none configured)"
+    today = date.today()
+    today_str = today.strftime("%Y-%m-%d")
     return f"""\
 You are a Live Cloud CLI Translator. Given a natural language query, output a JSON plan \
 that specifies which CLI commands to run and how to display the results as a table.
@@ -71,6 +74,9 @@ Output ONLY a raw JSON object — no markdown, no explanation.
     {{"header": "Column Name", "path": "jmespath path within each record", "default": "N/A"}}
   ]
 }}
+
+## Current Date
+Today is {today_str}. Use this to compute relative date ranges (e.g. "last month", "this year").
 
 ## Rules
 - Do NOT include --output or --format flags in args (appended automatically).
