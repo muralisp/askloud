@@ -6,3 +6,15 @@ __pycache__/
 *.log
 .env
 .DS_Store
+
+# Terraform — downloaded providers and local state; never commit these
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+terraform.tfvars
+*_secret_vars.tf
+
+# Terraform plan output files
+*.tfplan
+terraform_plan_output
