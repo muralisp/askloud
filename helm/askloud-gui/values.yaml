@@ -3,7 +3,7 @@ replicaCount: 1
 # on every push to main.
 image:
   repository: "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-gui" # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-gui
-  tag: c165055
+  tag: 5e0ac0c
   pullPolicy: Always
 service:
   type: ClusterIP
@@ -20,7 +20,7 @@ secrets:
   gcp: cloud-creds-gcp
 persistence:
   enabled: true
-  existingClaim: "askloud-data"   # reuse the PVC created by deploy-eks.sh; set to "" to let Helm create one
+  existingClaim: "askloud-data" # reuse the PVC created by deploy-eks.sh; set to "" to let Helm create one
   storageClassName: ebs-io2
   size: 10Gi
 # Collector CronJob — image updated by CI alongside the GUI image
@@ -29,7 +29,7 @@ collector:
   schedule: "0 */6 * * *"
   image:
     repository: "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-engine" # injected by CI: ACCOUNT.dkr.ecr.REGION.amazonaws.com/askloud-engine
-    tag: c165055
+    tag: 5e0ac0c
     pullPolicy: Always
 resources: {}
 #  requests:
