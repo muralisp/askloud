@@ -174,7 +174,7 @@ class EngineManager:
 
             buf = io.StringIO()
             with contextlib.redirect_stdout(buf):
-                self._engine = CloudInventoryEngine(mode="snapshot")
+                self._engine = CloudInventoryEngine(mode="inventory")
 
             os.chdir(old_cwd)
         except Exception as exc:
@@ -192,7 +192,10 @@ class EngineManager:
 
     @property
     def mode(self) -> str:
-        return self._engine.mode if self._engine else "snapshot"
+        if not self._engine:
+            return "snapshot"
+        # Engine uses "inventory" internally; frontend expects "snapshot"
+        return "snapshot" if self._engine.mode == "inventory" else self._engine.mode
 
     @property
     def resource_types(self) -> List[str]:
@@ -202,23 +205,54 @@ class EngineManager:
 
     @property
     def snapshot_age(self) -> str:
-        if self._engine:
-            return self._engine._snapshot_age_str()
-        return ""
+        if not self._engine:
+            return ""
+        try:
+            from askloud.settings import DYNAMODB_TABLE
+            if DYNAMODB_TABLE:
+                return "per-query"
+        except ImportError:
+            pass
+        return self._engine._inventory_age_str()
 
     # ── Mode switching ──────────────────────────────────────────────────────
 
     def switch_mode(self, mode: str) -> str:
-        """Switch between 'snapshot' and 'live'. Returns the active mode."""
+        """Switch between 'snapshot'/'inventory' and 'live'. Returns the active mode."""
         if not self._engine:
             return "snapshot"
-        if mode not in ("snapshot", "live"):
-            return self._engine.mode
-        self._engine._switch_mode(mode)
-        return self._engine.mode
+        # Normalise: frontend sends "snapshot", engine expects "inventory"
+        engine_mode = "inventory" if mode == "snapshot" else mode
+        if engine_mode not in ("inventory", "live"):
+            return self.mode
+        self._engine._switch_mode(engine_mode)
+        return self.mode
 
     def clear_history(self, session_id: str) -> None:
         self._histories.pop(session_id, None)
+
+    # ── Reload ──────────────────────────────────────────────────────────────
+
+    def reload(self) -> Dict[str, Any]:
+        """Reload inventory (refresh DynamoDB schema samples + clear all session histories)."""
+        if not self._engine:
+            return {"error": "Engine not initialised"}
+        try:
+            try:
+                from askloud.dynamo import clear_query_cache
+                clear_query_cache()
+            except ImportError:
+                pass
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                self._engine._reload_inventory()
+            self._histories.clear()
+            return {
+                "resources": sorted(self._engine._loader.data.keys()),
+                "message":   _strip_ansi(buf.getvalue()).strip(),
+            }
+        except Exception as exc:
+            return {"error": str(exc)}
 
     # ── Query execution ─────────────────────────────────────────────────────
 
@@ -254,7 +288,7 @@ class EngineManager:
         try:
             with contextlib.redirect_stdout(ctx.buf):
                 from askloud.filters import is_direct_search
-                if self._engine.mode == "snapshot" and is_direct_search(user_query):
+                if self._engine.mode != "live" and is_direct_search(user_query):
                     self._engine.direct_search(user_query)
                 else:
                     self._engine.process_query(user_query)
@@ -266,9 +300,7 @@ class EngineManager:
         # Persist updated history
         self._histories[session_id] = list(self._engine.history)
 
-        # Parse captured stdout
-        raw_text = ctx.buf.getvalue()
-        cost_info, messages = _parse_stdout(raw_text)
+        cost_info, messages = _parse_stdout(ctx.buf.getvalue())
 
         # Build items list: tables with auto-generated charts interleaved
         items: List[Dict[str, Any]] = []
@@ -281,6 +313,7 @@ class EngineManager:
             items.append({"type": "message", "text": msg})
 
         return {"items": items, "cost_info": cost_info, "error": error}
+
 
 
 def _parse_stdout(raw: str):

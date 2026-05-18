@@ -1,0 +1,58 @@
+{
+  "workspaces": [
+    {
+      "id":              "dev-ec2-test-inventory",
+      "label":           "dev / ec2 / test-inventory",
+      "account":         "dev",
+      "provider":        "aws",
+      "region":          "ap-south-1",
+      "profile":         "askloud_dev",
+      "path":            "terraform/aws/dev/ec2/test-inventory",
+      "tfstate_bucket":  "askloud-tfstate",
+      "tfstate_key":     "dev/ec2/test-inventory/terraform.tfstate",
+      "terraform_types": ["aws_instance", "aws_eip", "aws_security_group"]
+    },
+    {
+      "id":              "dev-networking",
+      "label":           "dev / networking",
+      "account":         "dev",
+      "provider":        "aws",
+      "region":          "ap-south-1",
+      "profile":         "askloud_dev",
+      "path":            "terraform/aws/dev/networking",
+      "tfstate_bucket":  "askloud-tfstate",
+      "tfstate_key":     "dev/networking/terraform.tfstate",
+      "terraform_types": ["aws_vpc", "aws_subnet", "aws_internet_gateway", "aws_nat_gateway", "aws_route_table"],
+      "uses_modules":    true
+    },
+    {
+      "id":              "dev-ecr",
+      "label":           "dev / ecr",
+      "account":         "dev",
+      "provider":        "aws",
+      "region":          "ap-south-1",
+      "profile":         "askloud_dev",
+      "path":            "terraform/aws/dev/ecr",
+      "tfstate_bucket":  "askloud-tfstate",
+      "tfstate_key":     "dev/ecr/terraform.tfstate",
+      "terraform_types": ["aws_ecr_repository"],
+      "uses_modules":    true
+    },
+    {
+      "id":              "central-ops",
+      "label":           "central-ops",
+      "account":         "central-ops",
+      "provider":        "aws",
+      "region":          "ap-south-1",
+      "profile":         "askloud_central_ops",
+      "path":            "terraform/aws/central_ops",
+      "tfstate_bucket":  "askloud-tfstate",
+      "tfstate_key":     "central_ops/terraform.tfstate",
+      "terraform_types": [
+        "aws_lambda_function", "aws_sqs_queue", "aws_dynamodb_table",
+        "aws_cloudwatch_event_bus", "aws_cloudwatch_event_rule", "aws_cloudwatch_log_group",
+        "aws_iam_role"
+      ]
+    }
+  ]
+}

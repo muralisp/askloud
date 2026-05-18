@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Askloud — Cloud Inventory</title>
 
-  <!-- Tabulator — interactive table library -->
   <link href="https://unpkg.com/tabulator-tables@6.2.1/dist/css/tabulator_midnight.min.css" rel="stylesheet">
   <script src="https://unpkg.com/tabulator-tables@6.2.1/dist/js/tabulator.min.js"></script>
-
-  <!-- Plotly — charts -->
   <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
 
   {% load static %}
@@ -25,9 +22,7 @@
   </div>
   <div class="header-right">
     <span id="status-badge" class="badge badge-loading">Loading…</span>
-    <span id="mode-badge" class="badge badge-snapshot" title="Current query mode">snapshot</span>
-    <button id="toggle-mode" class="btn-mode" title="Switch query mode">Switch to live</button>
-    <button id="clear-history" class="btn-clear" title="Clear conversation history">Clear history</button>
+    <button id="clear-history" class="btn-clear" title="Clear conversation history for current tab">Clear history</button>
   </div>
 </header>
 
@@ -37,38 +32,64 @@
   <span id="age-label"></span>
 </div>
 
-<!-- ── Main layout ────────────────────────────────────────────────────── -->
-<div class="layout">
+<!-- ── Main tab bar ────────────────────────────────────────────────────── -->
+<div class="main-tabs">
+  <button class="main-tab active" data-tab="inventory" id="tab-inventory">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    Inventory
+  </button>
+  <button class="main-tab" data-tab="live" id="tab-live">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    Live
+  </button>
 
-  <!-- Left: data/results panel (80%) -->
-  <section class="data-panel" id="data-panel">
-    <div id="data-area">
-      <div class="data-empty">
-        <div class="data-empty-icon">☁</div>
-        <div class="data-empty-title">Ask Askloud anything</div>
-        <div class="data-empty-hint">e.g. "list running EC2 instances" or "show all Azure VMs by region"</div>
+</div>
+
+<!-- ── Content area ────────────────────────────────────────────────────── -->
+<div class="content-area">
+
+  <!-- Inventory feed -->
+  <div class="feed-wrap" id="inventory-pane">
+    <div class="feed" id="inventory-feed">
+      <div class="feed-welcome">
+        <div class="feed-welcome-icon">☁</div>
+        <div class="feed-welcome-title">Ask Askloud anything</div>
+        <div class="feed-welcome-hint">e.g. "list running EC2 instances" or "show all Azure VMs by region"</div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Right: chat panel (20%) -->
-  <aside class="chat-panel">
-    <div class="chat-messages" id="messages"></div>
-    <div class="chat-footer">
-      <form id="query-form" autocomplete="off">
-        <input
-          id="query-input"
-          type="text"
-          placeholder="Ask a question…"
-          spellcheck="false"
-          autofocus
-        >
-        <button type="submit" id="send-btn">Send</button>
-      </form>
-      <div id="cost-bar" class="cost-bar hidden"></div>
+  <!-- Live feed -->
+  <div class="feed-wrap hidden" id="live-pane">
+    <div class="feed" id="live-feed">
+      <div class="feed-welcome">
+        <div class="feed-welcome-icon">⚡</div>
+        <div class="feed-welcome-title">Live cloud queries</div>
+        <div class="feed-welcome-hint">Queries run directly against your cloud provider APIs in real time.</div>
+      </div>
     </div>
-  </aside>
+  </div>
 
+
+</div>
+
+<!-- ── Input bar ──────────────────────────────────────────────────────── -->
+<div class="input-bar" id="input-bar">
+  <form id="query-form" autocomplete="off">
+    <input
+      id="query-input"
+      type="text"
+      placeholder="Ask a question about your cloud resources…"
+      spellcheck="false"
+      autofocus
+    >
+    <button type="submit" id="send-btn" title="Send">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </form>
 </div>
 
 <script src="{% static 'chat/app.js' %}?v={% now "U" %}"></script>

@@ -5,7 +5,21 @@ build_system_prompt(loader) reads the current state of a DataLoader and returns
 the full system prompt string passed to the LLM on every query.
 """
 
+import json as _json
+import os as _os
+
 from .loader import DataLoader
+
+_REPO_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+
+
+def _load_terraform_workspaces() -> list:
+    path = _os.path.join(_REPO_ROOT, "config", "terraform_workspaces.json")
+    try:
+        with open(path) as f:
+            return _json.load(f).get("workspaces", [])
+    except Exception:
+        return []
 
 
 def build_system_prompt(loader: DataLoader) -> str:
@@ -54,6 +68,20 @@ def build_system_prompt(loader: DataLoader) -> str:
             )
     files_str = "\n".join(file_lines) if file_lines else "  (none)"
 
+    # Workspace accounts section — so the LLM knows which account name to use for create_resource
+    workspaces = _load_terraform_workspaces()
+    ws_lines = []
+    for ws in workspaces:
+        engine_types = []
+        for tf_t in ws.get("terraform_types", []):
+            # Map back to engine types for readability
+            engine_types.append(tf_t)
+        ws_lines.append(
+            f"  account={ws['account']}  workspace={ws['label']}  "
+            f"types: {', '.join(ws.get('terraform_types', []))}"
+        )
+    ws_section = "\n".join(ws_lines) if ws_lines else "  (none configured)"
+
     return f"""You are a Cloud Inventory Expert. Translate natural language queries into a JSON query plan.
 
 ## Available Resources
@@ -61,6 +89,10 @@ def build_system_prompt(loader: DataLoader) -> str:
 
 ## Loaded Data Files
 {files_str}
+
+## Terraform Workspace Accounts
+Use these EXACT account names in "create_resource" and "terraform_change" steps.
+{ws_section}
 
 ## Field Schemas
 {schemas_str}
@@ -103,6 +135,52 @@ For refresh/latest data requests use action "refresh" instead:
   ]
 }}
 
+For infrastructure changes (set/update/add/remove tags, rename resources) use action "terraform_change":
+{{
+  "title": "...",
+  "steps": [
+    {{
+      "action":      "terraform_change",
+      "resource":    "<engine resource type, e.g. ec2>",
+      "resource_id": "<AWS resource ID, e.g. i-0abc123>",
+      "account":     "<friendly account name, e.g. dev>",
+      "operation":   "set_tag | remove_tag",
+      "tag_key":     "<tag key>",
+      "tag_value":   "<tag value (set_tag only)>"
+    }}
+  ]
+}}
+
+For creating new resources from a template use operation "create_resource":
+{{
+  "title": "...",
+  "steps": [
+    {{
+      "action":    "terraform_change",
+      "resource":  "<engine resource type, e.g. ec2 | security_group>",
+      "account":   "<friendly account name, e.g. dev>",
+      "operation": "create_resource",
+      "params":    {{
+        "<param>": "<value if specified by user, omit if not provided>"
+      }}
+    }}
+  ]
+}}
+
+For deleting or terminating existing resources use operation "delete_resource":
+{{
+  "title": "...",
+  "steps": [
+    {{
+      "action":      "terraform_change",
+      "resource":    "<engine resource type, e.g. ec2>",
+      "resource_id": "<AWS resource ID, e.g. i-0abc123>",
+      "account":     "<friendly account name, e.g. dev>",
+      "operation":   "delete_resource"
+    }}
+  ]
+}}
+
 ## Rules
 1. "filter": jmespath applied to the full records array.
    - Equality:  [?State.Name == 'running']
@@ -136,8 +214,25 @@ For refresh/latest data requests use action "refresh" instead:
 12. "count_only": set true when the user asks "how many", "count", or any question
     whose answer is a number. Do not include "columns" when count_only is true.
     The engine will print "{{N}} {{resource}} records match." automatically.
-13. "action": defaults to "query". Use "refresh" when the user says "latest", "refresh",
-    "update", "sync", or "get latest data". Do not mix query and refresh steps.
+13. "action": defaults to "query".
+    - Use "refresh" when the user says "latest", "refresh", "update", "sync", or "get latest data".
+    - Use "terraform_change" when the user wants to MAKE A CHANGE to a resource or CREATE one —
+      e.g. "set tag", "rename", "add tag", "remove tag", "tag X as Y", "update the Name of",
+      "create a new ec2", "create an instance", "launch an instance". Do not use query or refresh
+      for change or creation requests. Do not mix terraform_change with query/refresh steps.
+    - For "terraform_change" steps:
+      * "operation": "set_tag" to add/update a tag, "remove_tag" to delete a tag key,
+        "create_resource" to create a new resource from an HCL template,
+        "delete_resource" to permanently destroy a resource (user says terminate/delete/destroy/remove).
+      * "account": use the friendly account name (e.g. "dev", "prod"). If the account is unknown
+        from the conversation, add a preliminary query step (show=false) that binds "account" from
+        the resource record, then use {{account}} as the account value in the change step.
+      * Do NOT fabricate resource_id. If the user has not provided it and it is not resolvable
+        from prior conversation, add a query step (show=false) to look it up and bind both
+        "resource_id" (InstanceId / the primary key) and "account" from the record.
+      * For "create_resource": include only the params the user explicitly specified. The engine
+        will interactively prompt for all missing required parameters. Supported types: ec2,
+        security_group. Do NOT include resource_id for create_resource steps.
 14. For "refresh" steps:
     - "args": CLI args without the binary name or --output flag.
       AWS examples:  ["ec2","describe-instances","--region","us-east-1"]
@@ -154,7 +249,7 @@ For refresh/latest data requests use action "refresh" instead:
     Do not mix resources from different providers to answer a single-provider question.
 17. When the user asks for data that is not present in any loaded schema — such as cost, pricing,
     billing, or spend — output an unavailable plan so the engine can show a helpful message:
-    {{"title": "<descriptive title>", "steps": [], "unavailable": "Cost/pricing data is not in the local snapshot. Switch to live mode with /live to query it in real time."}}
+    {{"title": "<descriptive title>", "steps": [], "unavailable": "Cost/pricing data is not in the inventory. Switch to live mode with /live to query it in real time."}}
     The engine will display the "unavailable" message directly. Do NOT invent placeholder columns.
 15. When the user asks for latest/refresh data about a SPECIFIC resource ID (e.g. an instance ID)
     and you do not already know its Region and Account from prior conversation, you MUST add a
@@ -190,6 +285,33 @@ User: refresh data for instance i-0abc123
 User: get latest about i-0abc123  (region/account unknown from conversation)
 {{"title": "Refresh EC2 instance i-0abc123", "steps": [{{"action": "query", "resource": "ec2", "filter": "[?InstanceId == 'i-0abc123']", "bind": {{"region": "Region", "account": "Account"}}, "show": false}}, {{"action": "refresh", "provider": "aws", "resource": "ec2", "args": ["ec2", "describe-instances", "--instance-ids", "i-0abc123", "--region", "{{region}}"], "file_path": "data/aws/{{account}}/{{region}}/ec2.json", "scope": {{"InstanceId": "i-0abc123"}}}}]}}
 
+User: set Name tag to Test1 on i-0079a6ebb2d95a73e in dev
+{{"title": "Set Name tag on i-0079a6ebb2d95a73e", "steps": [{{"action": "terraform_change", "resource": "ec2", "resource_id": "i-0079a6ebb2d95a73e", "account": "dev", "operation": "set_tag", "tag_key": "Name", "tag_value": "Test1"}}]}}
+
+User: tag the dev ec2 instance i-0abc123 with Owner=platform-team
+{{"title": "Tag i-0abc123 with Owner=platform-team", "steps": [{{"action": "terraform_change", "resource": "ec2", "resource_id": "i-0abc123", "account": "dev", "operation": "set_tag", "tag_key": "Owner", "tag_value": "platform-team"}}]}}
+
+User: remove the Temporary tag from i-0abc123  (account unknown)
+{{"title": "Remove Temporary tag from i-0abc123", "steps": [{{"action": "query", "resource": "ec2", "filter": "[?InstanceId == 'i-0abc123']", "bind": {{"account": "Account"}}, "show": false}}, {{"action": "terraform_change", "resource": "ec2", "resource_id": "i-0abc123", "account": "{{account}}", "operation": "remove_tag", "tag_key": "Temporary"}}]}}
+
+User: create a new ec2 instance in dev
+{{"title": "Create EC2 instance in dev", "steps": [{{"action": "terraform_change", "resource": "ec2", "account": "dev", "operation": "create_resource", "params": {{}}}}]}}
+
+User: create a t3.small ec2 instance named web-server in dev
+{{"title": "Create EC2 instance web-server in dev", "steps": [{{"action": "terraform_change", "resource": "ec2", "account": "dev", "operation": "create_resource", "params": {{"name": "web-server", "instance_type": "t3.small"}}}}]}}
+
+User: create an ec2 instance similar to i-0abc123
+{{"title": "Create EC2 instance similar to i-0abc123", "steps": [{{"action": "query", "resource": "ec2", "filter": "[?InstanceId == 'i-0abc123']", "bind": {{"ref_subnet": "SubnetId", "ref_sg": "SecurityGroupId", "ref_type": "InstanceType", "ref_key": "KeyName", "ref_ami": "ImageId", "account": "Account"}}, "show": false}}, {{"action": "terraform_change", "resource": "ec2", "account": "{{account}}", "operation": "create_resource", "params": {{"subnet_id": "{{ref_subnet}}", "security_group_id": "{{ref_sg}}", "instance_type": "{{ref_type}}", "key_name": "{{ref_key}}", "ami": "{{ref_ami}}"}}}}]}}
+
+User: terminate instance i-0abc123 in dev
+{{"title": "Terminate i-0abc123", "steps": [{{"action": "terraform_change", "resource": "ec2", "resource_id": "i-0abc123", "account": "dev", "operation": "delete_resource"}}]}}
+
+User: delete the instance named test8  (account unknown)
+{{"title": "Delete EC2 instance test8", "steps": [{{"action": "query", "resource": "ec2", "tag_equals": {{"Name": "test8"}}, "bind": {{"resource_id": "InstanceId", "account": "Account"}}, "show": false}}, {{"action": "terraform_change", "resource": "ec2", "resource_id": "{{resource_id}}", "account": "{{account}}", "operation": "delete_resource"}}]}}
+
+User: terminate test8 and test9 instances  (accounts unknown)
+{{"title": "Terminate EC2 instances test8 and test9", "steps": [{{"action": "query", "resource": "ec2", "tag_equals": {{"Name": "test8"}}, "bind": {{"resource_id_1": "InstanceId", "account_1": "Account"}}, "show": false}}, {{"action": "query", "resource": "ec2", "tag_equals": {{"Name": "test9"}}, "bind": {{"resource_id_2": "InstanceId", "account_2": "Account"}}, "show": false}}, {{"action": "terraform_change", "resource": "ec2", "resource_id": "{{resource_id_1}}", "account": "{{account_1}}", "operation": "delete_resource"}}, {{"action": "terraform_change", "resource": "ec2", "resource_id": "{{resource_id_2}}", "account": "{{account_2}}", "operation": "delete_resource"}}]}}
+
 User: show me the cost of all azure resources
-{{"title": "Azure Resource Cost", "steps": [], "unavailable": "Cost/pricing data is not in the local snapshot. Switch to live mode with /live to query it in real time."}}
+{{"title": "Azure Resource Cost", "steps": [], "unavailable": "Cost/pricing data is not in the inventory. Switch to live mode with /live to query it in real time."}}
 """

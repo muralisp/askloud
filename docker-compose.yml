@@ -18,6 +18,8 @@ services:
       - ./askloud:/app/askloud
       # Snapshot data (read-write so the collector can refresh it)
       - ./data:/app/data
+      # Terraform workspaces — needed for resource creation from the GUI
+      - ./terraform:/app/terraform
       # Cloud credentials for live-query mode — mount from host
       - ${HOME}/.aws:/root/.aws:ro
       - ${HOME}/.azure:/root/.azure:ro

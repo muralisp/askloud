@@ -1,0 +1,2486 @@
+{
+  "version": 4,
+  "terraform_version": "1.14.9",
+  "serial": 8,
+  "lineage": "a09792dc-2cd1-670c-fa5c-2543228ed776",
+  "outputs": {
+    "cluster_name": {
+      "value": "askloud-dev",
+      "type": "string"
+    },
+    "configure_kubectl": {
+      "value": "aws eks update-kubeconfig --region ap-south-1 --name askloud-dev",
+      "type": "string"
+    },
+    "ebs_csi_role_arn": {
+      "value": "arn:aws:iam::099878477985:role/askloud-dev-ebs-csi",
+      "type": "string"
+    },
+    "ecr_engine_url": {
+      "value": "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-engine",
+      "type": "string"
+    },
+    "ecr_gui_url": {
+      "value": "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-gui",
+      "type": "string"
+    },
+    "github_actions_role_arn": {
+      "value": "arn:aws:iam::099878477985:role/askloud-dev-github-actions",
+      "type": "string"
+    },
+    "vpc_id": {
+      "value": "vpc-0d59c8e3576981e43",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "aws_availability_zones",
+      "name": "available",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "all_availability_zones": null,
+            "exclude_names": null,
+            "exclude_zone_ids": null,
+            "filter": [
+              {
+                "name": "opt-in-status",
+                "values": [
+                  "opt-in-not-required"
+                ]
+              }
+            ],
+            "group_names": [
+              "ap-south-1-zg-1"
+            ],
+            "id": "ap-south-1",
+            "names": [
+              "ap-south-1a",
+              "ap-south-1b",
+              "ap-south-1c"
+            ],
+            "state": null,
+            "timeouts": null,
+            "zone_ids": [
+              "aps1-az1",
+              "aps1-az3",
+              "aps1-az2"
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "data",
+      "type": "aws_caller_identity",
+      "name": "current",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "account_id": "099878477985",
+            "arn": "arn:aws:iam::099878477985:user/spmurali",
+            "id": "099878477985",
+            "user_id": "AIDAROQJYUCQQBUHOHVTF"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.ebs_csi",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "ebs_csi_assume",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "1798836935",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::099878477985:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9\"\n      },\n      \"Condition\": {\n        \"StringEquals\": {\n          \"oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:aud\": \"sts.amazonaws.com\",\n          \"oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:sub\": \"system:serviceaccount:kube-system:ebs-csi-controller-sa\"\n        }\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Principal\":{\"Federated\":\"arn:aws:iam::099878477985:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9\"},\"Condition\":{\"StringEquals\":{\"oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:aud\":\"sts.amazonaws.com\",\"oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:sub\":\"system:serviceaccount:kube-system:ebs-csi-controller-sa\"}}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRoleWithWebIdentity"
+                ],
+                "condition": [
+                  {
+                    "test": "StringEquals",
+                    "values": [
+                      "sts.amazonaws.com"
+                    ],
+                    "variable": "oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:aud"
+                  },
+                  {
+                    "test": "StringEquals",
+                    "values": [
+                      "system:serviceaccount:kube-system:ebs-csi-controller-sa"
+                    ],
+                    "variable": "oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:sub"
+                  }
+                ],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "arn:aws:iam::099878477985:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9"
+                    ],
+                    "type": "Federated"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.ebs_csi",
+      "mode": "managed",
+      "type": "aws_eks_addon",
+      "name": "ebs_csi",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addon_name": "aws-ebs-csi-driver",
+            "addon_version": "v1.59.0-eksbuild.1",
+            "arn": "arn:aws:eks:ap-south-1:099878477985:addon/askloud-dev/aws-ebs-csi-driver/10cee467-bd15-866f-42b8-68dba2e33371",
+            "cluster_name": "askloud-dev",
+            "configuration_values": "",
+            "created_at": "2026-04-26T08:02:13Z",
+            "id": "askloud-dev:aws-ebs-csi-driver",
+            "modified_at": "2026-04-27T00:36:00Z",
+            "pod_identity_association": [],
+            "preserve": null,
+            "resolve_conflicts": null,
+            "resolve_conflicts_on_create": null,
+            "resolve_conflicts_on_update": "PRESERVE",
+            "service_account_role_arn": "arn:aws:iam::099878477985:role/askloud-dev-ebs-csi",
+            "tags": {
+              "Name": "askloud-dev-ebs-csi"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-ebs-csi",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjI0MDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.ebs_csi.aws_iam_role.ebs_csi",
+            "module.ebs_csi.aws_iam_role_policy_attachment.ebs_csi",
+            "module.ebs_csi.data.aws_iam_policy_document.ebs_csi_assume",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_openid_connect_provider.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.eks.data.tls_certificate.eks",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ebs_csi",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "ebs_csi",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:role/askloud-dev-ebs-csi",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:aud\":\"sts.amazonaws.com\",\"oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9:sub\":\"system:serviceaccount:kube-system:ebs-csi-controller-sa\"}},\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::099878477985:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-04-26T08:02:12Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "askloud-dev-ebs-csi",
+            "inline_policy": [],
+            "managed_policy_arns": [
+              "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+            ],
+            "max_session_duration": 3600,
+            "name": "askloud-dev-ebs-csi",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Name": "askloud-dev-ebs-csi"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-ebs-csi",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "unique_id": "AROAROQJYUCQSOLOBT7L3"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.ebs_csi.data.aws_iam_policy_document.ebs_csi_assume",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_openid_connect_provider.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.eks.data.tls_certificate.eks",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ebs_csi",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "ebs_csi",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-ebs-csi-2026042608021448690000000e",
+            "policy_arn": "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy",
+            "role": "askloud-dev-ebs-csi"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.ebs_csi.aws_iam_role.ebs_csi",
+            "module.ebs_csi.data.aws_iam_policy_document.ebs_csi_assume",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_openid_connect_provider.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.eks.data.tls_certificate.eks",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ecr",
+      "mode": "managed",
+      "type": "aws_ecr_lifecycle_policy",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "askloud-engine",
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-engine",
+            "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"Expire images beyond the 10 most recent\",\"rulePriority\":1,\"selection\":{\"countNumber\":10,\"countType\":\"imageCountMoreThan\",\"tagStatus\":\"any\"}}]}",
+            "registry_id": "099878477985",
+            "repository": "askloud-engine"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.ecr.aws_ecr_repository.this"
+          ]
+        },
+        {
+          "index_key": "askloud-gui",
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-gui",
+            "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"Expire images beyond the 10 most recent\",\"rulePriority\":1,\"selection\":{\"countNumber\":10,\"countType\":\"imageCountMoreThan\",\"tagStatus\":\"any\"}}]}",
+            "registry_id": "099878477985",
+            "repository": "askloud-gui"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.ecr.aws_ecr_repository.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ecr",
+      "mode": "managed",
+      "type": "aws_ecr_repository",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "askloud-engine",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ecr:ap-south-1:099878477985:repository/askloud-engine",
+            "encryption_configuration": [
+              {
+                "encryption_type": "AES256",
+                "kms_key": ""
+              }
+            ],
+            "force_delete": null,
+            "id": "askloud-engine",
+            "image_scanning_configuration": [
+              {
+                "scan_on_push": true
+              }
+            ],
+            "image_tag_mutability": "MUTABLE",
+            "name": "askloud-engine",
+            "registry_id": "099878477985",
+            "repository_url": "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-engine",
+            "tags": {
+              "Name": "askloud-engine"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-engine",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        },
+        {
+          "index_key": "askloud-gui",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ecr:ap-south-1:099878477985:repository/askloud-gui",
+            "encryption_configuration": [
+              {
+                "encryption_type": "AES256",
+                "kms_key": ""
+              }
+            ],
+            "force_delete": null,
+            "id": "askloud-gui",
+            "image_scanning_configuration": [
+              {
+                "scan_on_push": true
+              }
+            ],
+            "image_tag_mutability": "MUTABLE",
+            "name": "askloud-gui",
+            "registry_id": "099878477985",
+            "repository_url": "099878477985.dkr.ecr.ap-south-1.amazonaws.com/askloud-gui",
+            "tags": {
+              "Name": "askloud-gui"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-gui",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxMjAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "cluster_assume",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "3552664922",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"eks.amazonaws.com\"\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRole\",\"Principal\":{\"Service\":\"eks.amazonaws.com\"}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRole"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "eks.amazonaws.com"
+                    ],
+                    "type": "Service"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "node_assume",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "2851119427",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRole\",\n      \"Principal\": {\n        \"Service\": \"ec2.amazonaws.com\"\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRole\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRole"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "ec2.amazonaws.com"
+                    ],
+                    "type": "Service"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "data",
+      "type": "tls_certificate",
+      "name": "eks",
+      "provider": "provider[\"registry.terraform.io/hashicorp/tls\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "certificates": [
+              {
+                "cert_pem": "-----BEGIN CERTIFICATE-----\nMIIEkjCCA3qgAwIBAgITBn+USionzfP6wq4rAfkI7rnExjANBgkqhkiG9w0BAQsF\nADCBmDELMAkGA1UEBhMCVVMxEDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNj\nb3R0c2RhbGUxJTAjBgNVBAoTHFN0YXJmaWVsZCBUZWNobm9sb2dpZXMsIEluYy4x\nOzA5BgNVBAMTMlN0YXJmaWVsZCBTZXJ2aWNlcyBSb290IENlcnRpZmljYXRlIEF1\ndGhvcml0eSAtIEcyMB4XDTE1MDUyNTEyMDAwMFoXDTM3MTIzMTAxMDAwMFowOTEL\nMAkGA1UEBhMCVVMxDzANBgNVBAoTBkFtYXpvbjEZMBcGA1UEAxMQQW1hem9uIFJv\nb3QgQ0EgMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALJ4gHHKeNXj\nca9HgFB0fW7Y14h29Jlo91ghYPl0hAEvrAIthtOgQ3pOsqTQNroBvo3bSMgHFzZM\n9O6II8c+6zf1tRn4SWiw3te5djgdYZ6k/oI2peVKVuRF4fn9tBb6dNqcmzU5L/qw\nIFAGbHrQgLKm+a/sRxmPUDgH3KKHOVj4utWp+UhnMJbulHheb4mjUcAwhmahRWa6\nVOujw5H5SNz/0egwLX0tdHA114gk957EWW67c4cX8jJGKLhD+rcdqsq08p8kDi1L\n93FcXmn/6pUCyziKrlA4b9v7LWIbxcceVOF34GfID5yHI9Y/QCB/IIDEgEw+OyQm\njgSubJrIqg0CAwEAAaOCATEwggEtMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/\nBAQDAgGGMB0GA1UdDgQWBBSEGMyFNOy8DJSULghZnMeyEE4KCDAfBgNVHSMEGDAW\ngBScXwDfqgHXMCs4iKK4bUqc8hGRgzB4BggrBgEFBQcBAQRsMGowLgYIKwYBBQUH\nMAGGImh0dHA6Ly9vY3NwLnJvb3RnMi5hbWF6b250cnVzdC5jb20wOAYIKwYBBQUH\nMAKGLGh0dHA6Ly9jcnQucm9vdGcyLmFtYXpvbnRydXN0LmNvbS9yb290ZzIuY2Vy\nMD0GA1UdHwQ2MDQwMqAwoC6GLGh0dHA6Ly9jcmwucm9vdGcyLmFtYXpvbnRydXN0\nLmNvbS9yb290ZzIuY3JsMBEGA1UdIAQKMAgwBgYEVR0gADANBgkqhkiG9w0BAQsF\nAAOCAQEAYjdCXLwQtT6LLOkMm2xF4gcAevnFWAu5CIw+7bMlPLVvUOTNNWqnkzSW\nMiGpSESrnO09tKpzbeR/FoCJbM8oAxiDR3mjEH4wW6w7sGDgd9QIpuEdfF7Au/ma\neyKdpwAJfqxGF4PcnCZXmTA5YpaP7dreqsXMGz7KQ2hsVxa81Q4gLv7/wmpdLqBK\nbRRYh5TmOTFffHPLkIhqhBGWJ6bt2YFGpn6jcgAKUj6DiAdjd4lpFw85hdKrCEVN\n0FE6/V1dN2RMfjCyVSRCnTawXZwXgWHxyvkQAiSr6w10kY17RSlQOYiypok1JR4U\nakcjMS9cmvqtmg5iUaQqqcT5NJ0hGA==\n-----END CERTIFICATE-----\n",
+                "is_ca": true,
+                "issuer": "CN=Starfield Services Root Certificate Authority - G2,O=Starfield Technologies\\, Inc.,L=Scottsdale,ST=Arizona,C=US",
+                "max_path_length": -1,
+                "not_after": "2037-12-31T01:00:00Z",
+                "not_before": "2015-05-25T12:00:00Z",
+                "public_key_algorithm": "RSA",
+                "serial_number": "144918191876577076464031512351042010504348870",
+                "sha1_fingerprint": "06b25927c42a721631c1efd9431e648fa62e1e39",
+                "signature_algorithm": "SHA256-RSA",
+                "subject": "CN=Amazon Root CA 1,O=Amazon,C=US",
+                "version": 3
+              },
+              {
+                "cert_pem": "-----BEGIN CERTIFICATE-----\nMIIEXjCCA0agAwIBAgITB3MSOAudZoijOx7Zv5zNpo4ODzANBgkqhkiG9w0BAQsF\nADA5MQswCQYDVQQGEwJVUzEPMA0GA1UEChMGQW1hem9uMRkwFwYDVQQDExBBbWF6\nb24gUm9vdCBDQSAxMB4XDTIyMDgyMzIyMjEyOFoXDTMwMDgyMzIyMjEyOFowPDEL\nMAkGA1UEBhMCVVMxDzANBgNVBAoTBkFtYXpvbjEcMBoGA1UEAxMTQW1hem9uIFJT\nQSAyMDQ4IE0wMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOtxLKnL\nH4gokjIwr4pXD3i3NyWVVYesZ1yX0yLI2qIUZ2t88Gfa4gMqs1YSXca1R/lnCKeT\nepWSGA+0+fkQNpp/L4C2T7oTTsddUx7g3ZYzByDTlrwS5HRQQqEFE3O1T5tEJP4t\nf+28IoXsNiEzl3UGzicYgtzj2cWCB41eJgEmJmcf2T8TzzK6a614ZPyq/w4CPAff\nnAV4coz96nW3AyiE2uhuB4zQUIXvgVSycW7sbWLvj5TDXunEpNCRwC4kkZjK7rol\njtT2cbb7W2s4Bkg3R42G3PLqBvt2N32e/0JOTViCk8/iccJ4sXqrS1uUN4iB5Nmv\nJK74csVl+0u0UecCAwEAAaOCAVowggFWMBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYD\nVR0PAQH/BAQDAgGGMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAdBgNV\nHQ4EFgQUgbgOY4qJEhjl+js7UJWf5uWQE4UwHwYDVR0jBBgwFoAUhBjMhTTsvAyU\nlC4IWZzHshBOCggwewYIKwYBBQUHAQEEbzBtMC8GCCsGAQUFBzABhiNodHRwOi8v\nb2NzcC5yb290Y2ExLmFtYXpvbnRydXN0LmNvbTA6BggrBgEFBQcwAoYuaHR0cDov\nL2NydC5yb290Y2ExLmFtYXpvbnRydXN0LmNvbS9yb290Y2ExLmNlcjA/BgNVHR8E\nODA2MDSgMqAwhi5odHRwOi8vY3JsLnJvb3RjYTEuYW1hem9udHJ1c3QuY29tL3Jv\nb3RjYTEuY3JsMBMGA1UdIAQMMAowCAYGZ4EMAQIBMA0GCSqGSIb3DQEBCwUAA4IB\nAQCtAN4CBSMuBjJitGuxlBbkEUDeK/pZwTXv4KqPK0G50fOHOQAd8j21p0cMBgbG\nkfMHVwLU7b0XwZCav0h1ogdPMN1KakK1DT0VwA/+hFvGPJnMV1Kx2G4S1ZaSk0uU\n5QfoiYIIano01J5k4T2HapKQmmOhS/iPtuo00wW+IMLeBuKMn3OLn005hcrOGTad\nhcmeyfhQP7Z+iKHvyoQGi1C0ClymHETx/chhQGDyYSWqB/THwnN15AwLQo0E5V9E\nSJlbe4mBlqeInUsNYugExNf+tOiybcrswBy8OFsd34XOW3rjSUtsuafd9AWySa3h\nxRRrwszrzX/WWGm6wyB+f7C4\n-----END CERTIFICATE-----\n",
+                "is_ca": true,
+                "issuer": "CN=Amazon Root CA 1,O=Amazon,C=US",
+                "max_path_length": 0,
+                "not_after": "2030-08-23T22:21:28Z",
+                "not_before": "2022-08-23T22:21:28Z",
+                "public_key_algorithm": "RSA",
+                "serial_number": "166129328851546858514271303855646110030630415",
+                "sha1_fingerprint": "2ad974a775f73cbdbbd8f5ac3a49255fa8fb1f8c",
+                "signature_algorithm": "SHA256-RSA",
+                "subject": "CN=Amazon RSA 2048 M01,O=Amazon,C=US",
+                "version": 3
+              },
+              {
+                "cert_pem": "-----BEGIN CERTIFICATE-----\nMIIF3TCCBMWgAwIBAgIQC4PYfnn7viYTJoWfANxTuTANBgkqhkiG9w0BAQsFADA8\nMQswCQYDVQQGEwJVUzEPMA0GA1UEChMGQW1hem9uMRwwGgYDVQQDExNBbWF6b24g\nUlNBIDIwNDggTTAxMB4XDTI2MDEyNzAwMDAwMFoXDTI3MDIyNTIzNTk1OVowKTEn\nMCUGA1UEAwweKi5la3MuYXAtc291dGgtMS5hbWF6b25hd3MuY29tMIIBIjANBgkq\nhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhv5NQzOW57AibZtdURJXq/91G3oMa70K\no7Xrhq4XAD0nG6OiN/NImJ3lFP7uxWWSSnN5hAc9xcuDc/77ne9IjfxgNToosF8C\nUvHNnQ13y7pEqvYg0dosz6tM134cZkwyImGP8OeLaKV4FsHYVxIXEnQdI0bC3Qiv\nyjv5mcJuAaKpm+n3/m/qBUiyL4s82W4+LGHI1hCUum3iIGA2ip6Hp7BwVGMoKecs\njqAYiXKjdfBmN6FJIQ+RIxbEgPT+o1Kidfik/1PFH2im76CefXY0HXBoWDQmWZn5\nZ6WrQ3Fu+qI0R/HgHtEb1fa7KqcsWs07rOfnrJZaB5FQVeydUV1ElwIDAQABo4IC\n7DCCAugwHwYDVR0jBBgwFoAUgbgOY4qJEhjl+js7UJWf5uWQE4UwHQYDVR0OBBYE\nFFbaD6c98vgjLUjXSFaf8SPmFLeAMCkGA1UdEQQiMCCCHiouZWtzLmFwLXNvdXRo\nLTEuYW1hem9uYXdzLmNvbTATBgNVHSAEDDAKMAgGBmeBDAECATAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwOwYDVR0fBDQwMjAwoC6gLIYqaHR0\ncDovL2NybC5yMm0wMS5hbWF6b250cnVzdC5jb20vcjJtMDEuY3JsMHUGCCsGAQUF\nBwEBBGkwZzAtBggrBgEFBQcwAYYhaHR0cDovL29jc3AucjJtMDEuYW1hem9udHJ1\nc3QuY29tMDYGCCsGAQUFBzAChipodHRwOi8vY3J0LnIybTAxLmFtYXpvbnRydXN0\nLmNvbS9yMm0wMS5jZXIwDAYDVR0TAQH/BAIwADCCAX0GCisGAQQB1nkCBAIEggFt\nBIIBaQFnAHYATGPcmOWcHauI9h6KPd6uj6tEozd7X5uUw/uhnPzBviYAAAGb/M85\ngwAABAMARzBFAiEA1YKhCfg9RgldH6IFIowiYiRs1Addi8oMUCIQ2pBXG/QCIDQs\nuHxMlYyoJ8LFzGLKuDLeaCFypNISBk2B4qJMapD1AHUAHJ9oLOn68EVpUPgbloqH\n3dsyENhM5siy44JSSsTPWZ8AAAGb/M85mQAABAMARjBEAiB0syZumJQByPaA1tqz\nfyZqtCV1iIwQefAGuEHFV6wxcwIgRcOL6BTii+Y/9u/ZGQBOlfDxftwa/4Widc2t\nWDuVsUoAdgBgTJqven93XwHUBvySDciZ6wscffjJUhv6+hd3O5eLyQAAAZv8zzpe\nAAAEAwBHMEUCIHgL0hy9AdNqPvNbTd8wfUUWVAcVRLgTZNCPKX+9nBuaAiEAulm6\ngP+wgjr9cyefY98pksM9Yy19ZoCHaQXTZkQmkv4wDQYJKoZIhvcNAQELBQADggEB\nAKXbVJ9K5wYRv93nW9febVCXN4txei0vG1tsp+1RRtBlKb0n1QoxfY/QHY1aS+KS\n4iZWVqd/45PJBO6ETnGA26dBOzQEmIQaHXlzHmf7ChoQ/IAzGnv1b7zSz1WJ+dHI\nQCRcxud0g7zOsJLZ1E4w3tAIHCWnjBHheAPCPhoKm7ou2Uyg+lAb4R+mjMoAt+tI\nfIs1dL5XZzShQxP92SykI0R2CAuLpluRK+9xTm03tqu9zaVENWTwlLe6ZFXl/G5a\nCA8DoejDqXx5rhT/W3fQ/0wtLULz5253CN20wlNMY9M7rS0UABfxMnTj8tr21ikl\nXqThadIz4H6dg8PDUGq6xbg=\n-----END CERTIFICATE-----\n",
+                "is_ca": false,
+                "issuer": "CN=Amazon RSA 2048 M01,O=Amazon,C=US",
+                "max_path_length": -1,
+                "not_after": "2027-02-25T23:59:59Z",
+                "not_before": "2026-01-27T00:00:00Z",
+                "public_key_algorithm": "RSA",
+                "serial_number": "15306089863077027100491464600926835641",
+                "sha1_fingerprint": "9540116bb56e8ea19f0b4a08e845a17f827c131e",
+                "signature_algorithm": "SHA256-RSA",
+                "subject": "CN=*.eks.ap-south-1.amazonaws.com",
+                "version": 3
+              }
+            ],
+            "content": null,
+            "id": "1e3a331631939a1ae4a625cd4244a4963dabbfa2",
+            "url": "https://oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9",
+            "verify_chain": true
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_addon",
+      "name": "coredns",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addon_name": "coredns",
+            "addon_version": "v1.11.4-eksbuild.33",
+            "arn": "arn:aws:eks:ap-south-1:099878477985:addon/askloud-dev/coredns/1acee468-a4fb-a9e7-39f4-93a50a24ea7d",
+            "cluster_name": "askloud-dev",
+            "configuration_values": "",
+            "created_at": "2026-04-26T08:04:12Z",
+            "id": "askloud-dev:coredns",
+            "modified_at": "2026-04-27T00:28:49Z",
+            "pod_identity_association": [],
+            "preserve": null,
+            "resolve_conflicts": null,
+            "resolve_conflicts_on_create": null,
+            "resolve_conflicts_on_update": "PRESERVE",
+            "service_account_role_arn": "",
+            "tags": {
+              "Name": "askloud-dev-coredns"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-coredns",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjI0MDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_eks_node_group.main",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role.node",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.aws_iam_role_policy_attachment.node_cni",
+            "module.eks.aws_iam_role_policy_attachment.node_ecr",
+            "module.eks.aws_iam_role_policy_attachment.node_worker",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.eks.data.aws_iam_policy_document.node_assume",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_addon",
+      "name": "kube_proxy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addon_name": "kube-proxy",
+            "addon_version": "v1.31.14-eksbuild.9",
+            "arn": "arn:aws:eks:ap-south-1:099878477985:addon/askloud-dev/kube-proxy/72cee467-b68c-84c4-a7f2-7b3b5827a7d5",
+            "cluster_name": "askloud-dev",
+            "configuration_values": "",
+            "created_at": "2026-04-26T08:02:10Z",
+            "id": "askloud-dev:kube-proxy",
+            "modified_at": "2026-04-26T08:02:17Z",
+            "pod_identity_association": [],
+            "preserve": null,
+            "resolve_conflicts": null,
+            "resolve_conflicts_on_create": null,
+            "resolve_conflicts_on_update": "PRESERVE",
+            "service_account_role_arn": "",
+            "tags": {
+              "Name": "askloud-dev-kube-proxy"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-kube-proxy",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjI0MDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_addon",
+      "name": "vpc_cni",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "addon_name": "vpc-cni",
+            "addon_version": "v1.20.4-eksbuild.2",
+            "arn": "arn:aws:eks:ap-south-1:099878477985:addon/askloud-dev/vpc-cni/5ecee467-b68a-86c3-c4d1-3bed0df4a5c6",
+            "cluster_name": "askloud-dev",
+            "configuration_values": "",
+            "created_at": "2026-04-26T08:02:10Z",
+            "id": "askloud-dev:vpc-cni",
+            "modified_at": "2026-04-26T08:02:18Z",
+            "pod_identity_association": [],
+            "preserve": null,
+            "resolve_conflicts": null,
+            "resolve_conflicts_on_create": null,
+            "resolve_conflicts_on_update": "PRESERVE",
+            "service_account_role_arn": "",
+            "tags": {
+              "Name": "askloud-dev-vpc-cni"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-vpc-cni",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjI0MDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_cluster",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "access_config": [
+              {
+                "authentication_mode": "CONFIG_MAP",
+                "bootstrap_cluster_creator_admin_permissions": true
+              }
+            ],
+            "arn": "arn:aws:eks:ap-south-1:099878477985:cluster/askloud-dev",
+            "bootstrap_self_managed_addons": true,
+            "certificate_authority": [
+              {
+                "data": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJU0VLNDdPRnUrUW93RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TmpBME1qWXdOelV4TXpsYUZ3MHpOakEwTWpNd056VTJNemxhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURGMW1BWHNaSzB5dVJKbW0wbXVEY0d2Z1RxVHluM2k5RU1SZENBTGV4Y0lVTmlOZlBlQi9VbE9aT0wKSXdPb1dKbkM4WC9EaHhLZWVwQmJRU2xNbGRmb1dTUWl4b0w5TmVFYzh3a21ycDZJajlPK0YwVjhWbktlQjRmWQpzd1pIOWhIYmdCT2VqRHhaUzBqVm5SN3pTUVpCYTA4RG8zTEhvNWZLTDlpVlpBeXQ2bFJFZ2F6T0k1Wjl1RmV0CnF2dklXbGxqVGQyQ3lxdzNXR0RGVGkwMFdTL05QOTJ6WnpxLytJdTJWMnJBQ1B3TVBwbDd0RGZ3YktKUk1GSG4KU200NTUxYmVZYUQwazRURzZ0dTlzWEp3REczUTArOEhZa20vUHRFbXJ1amMwd1hDM2dvS01MdVlFMkpja2hydQpkNXNxeGxuaFZRZ3VLaWpSckRsaWR5RkgxTzVqQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJUR2VwU2pQdTJjZGZXWDFEd2NsN2pKVG9UNk1EQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQnBXbmhhNVozaAprMXJWaWJaUDZMTHcyeEVYSEZFYVZUejU4MTI5Nkt4L3cxdGwvYlM5VUo1RkVuUkVORVhEZEs2SnQrQUdTZWRhCis3NVRuNVdOc3kzNy94ak9EUndBRHhlMHBNcm5CbVlpWUlUQ1grL1ZlMkUvNTJ3UTd0R3UyVTVIMVZXcU11WHMKQVVsdmNST05yRUVHSEZxRjBBQmJCYlh1UkcyOTI3Tmo0YkYxMW0yY0NHaEVwbUlncHBIYVM4MnJpc0x0Q3JiUgpIdUkyaTJ6TmFzVEwrU1BLN0xyUlk4ZzFYOE9QMVhLcEZCaXl5ZUsydmlTUGNCallsbHUxclRsYlI0N01QSjJMCnloQjA4SWtSVVJsN3lSME9VWUFzQ2p3TzVrV3Q5NDlmMXdiNFkvYTN4SXFUMjNUWXNuY0llaU9helpkZEo3aXYKQ3JwU0xNK241Mkg1Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+              }
+            ],
+            "cluster_id": null,
+            "compute_config": [],
+            "created_at": "2026-04-26T07:51:45Z",
+            "enabled_cluster_log_types": [],
+            "encryption_config": [],
+            "endpoint": "https://15FE48914C2A4CE698D28CB7197852E9.sk1.ap-south-1.eks.amazonaws.com",
+            "force_update_version": null,
+            "id": "askloud-dev",
+            "identity": [
+              {
+                "oidc": [
+                  {
+                    "issuer": "https://oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9"
+                  }
+                ]
+              }
+            ],
+            "kubernetes_network_config": [
+              {
+                "elastic_load_balancing": [
+                  {
+                    "enabled": false
+                  }
+                ],
+                "ip_family": "ipv4",
+                "service_ipv4_cidr": "172.20.0.0/16",
+                "service_ipv6_cidr": ""
+              }
+            ],
+            "name": "askloud-dev",
+            "outpost_config": [],
+            "platform_version": "eks.57",
+            "remote_network_config": [],
+            "role_arn": "arn:aws:iam::099878477985:role/askloud-dev-cluster-role",
+            "status": "ACTIVE",
+            "storage_config": [],
+            "tags": {
+              "Name": "askloud-dev"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "upgrade_policy": [
+              {
+                "support_type": "EXTENDED"
+              }
+            ],
+            "version": "1.31",
+            "vpc_config": [
+              {
+                "cluster_security_group_id": "sg-0167b32f18b8f1a3f",
+                "endpoint_private_access": true,
+                "endpoint_public_access": true,
+                "public_access_cidrs": [
+                  "0.0.0.0/0"
+                ],
+                "security_group_ids": [],
+                "subnet_ids": [
+                  "subnet-0238df71cf93465f3",
+                  "subnet-05a6cb0d2bbcb74a9",
+                  "subnet-0f788edd1ccefe44f"
+                ],
+                "vpc_id": "vpc-0d59c8e3576981e43"
+              }
+            ],
+            "zonal_shift_config": []
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjkwMDAwMDAwMDAwMCwidXBkYXRlIjozNjAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_eks_node_group",
+      "name": "main",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "ami_type": "AL2023_x86_64_STANDARD",
+            "arn": "arn:aws:eks:ap-south-1:099878477985:nodegroup/askloud-dev/askloud-dev-main/12cee467-b68f-ffdf-52f6-3a0bdd543c2e",
+            "capacity_type": "ON_DEMAND",
+            "cluster_name": "askloud-dev",
+            "disk_size": 20,
+            "force_update_version": null,
+            "id": "askloud-dev:askloud-dev-main",
+            "instance_types": [
+              "t3.medium"
+            ],
+            "labels": {},
+            "launch_template": [],
+            "node_group_name": "askloud-dev-main",
+            "node_group_name_prefix": "",
+            "node_repair_config": [
+              {
+                "enabled": false
+              }
+            ],
+            "node_role_arn": "arn:aws:iam::099878477985:role/askloud-dev-node-role",
+            "release_version": "1.31.14-20260415",
+            "remote_access": [],
+            "resources": [
+              {
+                "autoscaling_groups": [
+                  {
+                    "name": "eks-askloud-dev-main-12cee467-b68f-ffdf-52f6-3a0bdd543c2e"
+                  }
+                ],
+                "remote_access_security_group_id": ""
+              }
+            ],
+            "scaling_config": [
+              {
+                "desired_size": 2,
+                "max_size": 3,
+                "min_size": 1
+              }
+            ],
+            "status": "ACTIVE",
+            "subnet_ids": [
+              "subnet-0238df71cf93465f3",
+              "subnet-05a6cb0d2bbcb74a9",
+              "subnet-0f788edd1ccefe44f"
+            ],
+            "tags": {
+              "Name": "askloud-dev-main"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-main",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "taint": [],
+            "timeouts": null,
+            "update_config": [
+              {
+                "max_unavailable": 1,
+                "max_unavailable_percentage": 0
+              }
+            ],
+            "version": "1.31"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozNjAwMDAwMDAwMDAwLCJkZWxldGUiOjM2MDAwMDAwMDAwMDAsInVwZGF0ZSI6MzYwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role.node",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.aws_iam_role_policy_attachment.node_cni",
+            "module.eks.aws_iam_role_policy_attachment.node_ecr",
+            "module.eks.aws_iam_role_policy_attachment.node_worker",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.eks.data.aws_iam_policy_document.node_assume",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_openid_connect_provider",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9",
+            "client_id_list": [
+              "sts.amazonaws.com"
+            ],
+            "id": "arn:aws:iam::099878477985:oidc-provider/oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9",
+            "tags": {
+              "Name": "askloud-dev-oidc"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-oidc",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "thumbprint_list": [
+              "06b25927c42a721631c1efd9431e648fa62e1e39"
+            ],
+            "url": "oidc.eks.ap-south-1.amazonaws.com/id/15FE48914C2A4CE698D28CB7197852E9"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.eks.aws_eks_cluster.this",
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.aws_iam_role_policy_attachment.cluster_policy",
+            "module.eks.data.aws_iam_policy_document.cluster_assume",
+            "module.eks.data.tls_certificate.eks",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "cluster",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:role/askloud-dev-cluster-role",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"eks.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-04-26T07:51:29Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "askloud-dev-cluster-role",
+            "inline_policy": [],
+            "managed_policy_arns": [
+              "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+            ],
+            "max_session_duration": 3600,
+            "name": "askloud-dev-cluster-role",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Name": "askloud-dev-cluster-role"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-cluster-role",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "unique_id": "AROAROQJYUCQUPM5OGNEF"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.data.aws_iam_policy_document.cluster_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "node",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:role/askloud-dev-node-role",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-04-26T07:51:29Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "askloud-dev-node-role",
+            "inline_policy": [],
+            "managed_policy_arns": [
+              "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+              "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+              "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+              "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+            ],
+            "max_session_duration": 3600,
+            "name": "askloud-dev-node-role",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Name": "askloud-dev-node-role"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-node-role",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "unique_id": "AROAROQJYUCQRDKHC5JO7"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.data.aws_iam_policy_document.node_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "cluster_policy",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-cluster-role-20260426075133229800000005",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+            "role": "askloud-dev-cluster-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.aws_iam_role.cluster",
+            "module.eks.data.aws_iam_policy_document.cluster_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "node_cni",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-node-role-20260426075132856800000003",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+            "role": "askloud-dev-node-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.aws_iam_role.node",
+            "module.eks.data.aws_iam_policy_document.node_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "node_ecr",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-node-role-20260426075132920100000004",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+            "role": "askloud-dev-node-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.aws_iam_role.node",
+            "module.eks.data.aws_iam_policy_document.node_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "node_ssm",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-node-role-20260426075132474500000002",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+            "role": "askloud-dev-node-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.aws_iam_role.node",
+            "module.eks.data.aws_iam_policy_document.node_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.eks",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "node_worker",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-node-role-20260426075132469400000001",
+            "policy_arn": "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+            "role": "askloud-dev-node-role"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.eks.aws_iam_role.node",
+            "module.eks.data.aws_iam_policy_document.node_assume"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "ecr_push",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "199718492",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"ecr:GetAuthorizationToken\",\n      \"Resource\": \"*\"\n    },\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"ecr:UploadLayerPart\",\n        \"ecr:PutImage\",\n        \"ecr:InitiateLayerUpload\",\n        \"ecr:GetDownloadUrlForLayer\",\n        \"ecr:CompleteLayerUpload\",\n        \"ecr:BatchGetImage\",\n        \"ecr:BatchCheckLayerAvailability\"\n      ],\n      \"Resource\": [\n        \"arn:aws:ecr:ap-south-1:099878477985:repository/askloud-gui\",\n        \"arn:aws:ecr:ap-south-1:099878477985:repository/askloud-engine\"\n      ]\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"ecr:GetAuthorizationToken\",\"Resource\":\"*\"},{\"Effect\":\"Allow\",\"Action\":[\"ecr:UploadLayerPart\",\"ecr:PutImage\",\"ecr:InitiateLayerUpload\",\"ecr:GetDownloadUrlForLayer\",\"ecr:CompleteLayerUpload\",\"ecr:BatchGetImage\",\"ecr:BatchCheckLayerAvailability\"],\"Resource\":[\"arn:aws:ecr:ap-south-1:099878477985:repository/askloud-gui\",\"arn:aws:ecr:ap-south-1:099878477985:repository/askloud-engine\"]}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "ecr:GetAuthorizationToken"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "*"
+                ],
+                "sid": ""
+              },
+              {
+                "actions": [
+                  "ecr:BatchCheckLayerAvailability",
+                  "ecr:BatchGetImage",
+                  "ecr:CompleteLayerUpload",
+                  "ecr:GetDownloadUrlForLayer",
+                  "ecr:InitiateLayerUpload",
+                  "ecr:PutImage",
+                  "ecr:UploadLayerPart"
+                ],
+                "condition": [],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [],
+                "resources": [
+                  "arn:aws:ecr:ap-south-1:099878477985:repository/askloud-engine",
+                  "arn:aws:ecr:ap-south-1:099878477985:repository/askloud-gui"
+                ],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "data",
+      "type": "aws_iam_policy_document",
+      "name": "github_assume",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "1997901758",
+            "json": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"sts:AssumeRoleWithWebIdentity\",\n      \"Principal\": {\n        \"Federated\": \"arn:aws:iam::099878477985:oidc-provider/token.actions.githubusercontent.com\"\n      },\n      \"Condition\": {\n        \"StringEquals\": {\n          \"token.actions.githubusercontent.com:aud\": \"sts.amazonaws.com\"\n        },\n        \"StringLike\": {\n          \"token.actions.githubusercontent.com:sub\": \"repo:muralisp/askloud:*\"\n        }\n      }\n    }\n  ]\n}",
+            "minified_json": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Principal\":{\"Federated\":\"arn:aws:iam::099878477985:oidc-provider/token.actions.githubusercontent.com\"},\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":\"repo:muralisp/askloud:*\"}}}]}",
+            "override_json": null,
+            "override_policy_documents": null,
+            "policy_id": null,
+            "source_json": null,
+            "source_policy_documents": null,
+            "statement": [
+              {
+                "actions": [
+                  "sts:AssumeRoleWithWebIdentity"
+                ],
+                "condition": [
+                  {
+                    "test": "StringEquals",
+                    "values": [
+                      "sts.amazonaws.com"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:aud"
+                  },
+                  {
+                    "test": "StringLike",
+                    "values": [
+                      "repo:muralisp/askloud:*"
+                    ],
+                    "variable": "token.actions.githubusercontent.com:sub"
+                  }
+                ],
+                "effect": "Allow",
+                "not_actions": [],
+                "not_principals": [],
+                "not_resources": [],
+                "principals": [
+                  {
+                    "identifiers": [
+                      "arn:aws:iam::099878477985:oidc-provider/token.actions.githubusercontent.com"
+                    ],
+                    "type": "Federated"
+                  }
+                ],
+                "resources": [],
+                "sid": ""
+              }
+            ],
+            "version": "2012-10-17"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "data",
+      "type": "tls_certificate",
+      "name": "github",
+      "provider": "provider[\"registry.terraform.io/hashicorp/tls\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "certificates": [
+              {
+                "cert_pem": "-----BEGIN CERTIFICATE-----\nMIIGlTCCBH2gAwIBAgIRANJ/u8HeNZ5SFq1hSVhgmcQwDQYJKoZIhvcNAQEMBQAw\ngYgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpOZXcgSmVyc2V5MRQwEgYDVQQHEwtK\nZXJzZXkgQ2l0eTEeMBwGA1UEChMVVGhlIFVTRVJUUlVTVCBOZXR3b3JrMS4wLAYD\nVQQDEyVVU0VSVHJ1c3QgUlNBIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTIx\nMDMyMjAwMDAwMFoXDTM4MDExODIzNTk1OVowXzELMAkGA1UEBhMCR0IxGDAWBgNV\nBAoTD1NlY3RpZ28gTGltaXRlZDE2MDQGA1UEAxMtU2VjdGlnbyBQdWJsaWMgU2Vy\ndmVyIEF1dGhlbnRpY2F0aW9uIFJvb3QgUjQ2MIICIjANBgkqhkiG9w0BAQEFAAOC\nAg8AMIICCgKCAgEAk77VNlJ12AEjoBxHQknuY7a3If3EldVIKyZ8FFMQ2nn9K7ct\npNQs+uoy3UnCub0PSD17WphUr55dMXRPB/xQId2kz2hPGxJjbSWZTCqZ80gwYfqB\nfB6nCErcPiscHxhMcao1jK34bug7StnllALWiYQTqm3ITzPMUJY3kjPcX4jnn1TZ\nSPCYQ9Zm/Z8XOEPFAVEL1+MjDxRdWxTnS77d9MjaAzfR1jmhIVEwg7Bt1zBOlluR\n8HAkq79FgWRDDb0hOi886Z4NyyC1QifM2m+b7mQwkDnNk2WBITG1I1AzNyLjOO34\nMTDMRf5i+dFdMnlCh99qzFYZQE3Oqrv5tXZJlPEn+JGlg+UGs2MOgNzgElWApjtm\ntDmHLcjw0NEU6eQNTQ72XVdyxTscR1ad4tX7gWGMzE2AkDRbt9cUddzYBEifwMEo\niLTpHMqnsfFWt3tJTFnlIBWohAIp+jiUaZpJBo/NH3kUFxIMg3reH7GX7vmXeCik\nyESS6X0mBaZYcpt5E9gRX67FOGI0aLKGMI74kGGeMmz1BzbNokxu7Io27fLmmRVE\ncMN8vJw5wLTha/eDJSNX2RKA5UnwdQ/vjescm1QotCE8/HwK/+97a3X/ix2gGQWr\n+vgrgULoOLq7+6r9PeDzyt9Ol5cp7fMYVumllqy9w5CYsuD5otSmR0N8bc8CAwEA\nAaOCASAwggEcMB8GA1UdIwQYMBaAFFN5v1qqK0rPVIDh2JvAnfKyA2bLMB0GA1Ud\nDgQWBBRWc1hklfmSGrASKgRieaFAFYghSTAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwEQYDVR0g\nBAowCDAGBgRVHSAAMFAGA1UdHwRJMEcwRaBDoEGGP2h0dHA6Ly9jcmwudXNlcnRy\ndXN0LmNvbS9VU0VSVHJ1c3RSU0FDZXJ0aWZpY2F0aW9uQXV0aG9yaXR5LmNybDA1\nBggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3NwLnVzZXJ0cnVz\ndC5jb20wDQYJKoZIhvcNAQEMBQADggIBADpvBIlq7bMU0cFDT/9P9+BsgCkRgQs0\nS6Bf7vJSlWMHwby0VGvxCS0hrbi0K2BINZbEbsVsgpQq04431yyoVn3Hldorgq24\nRldRDOOipEZDTFB9wC9HYt1thHF00XeG2C8KC1plwoEzKAIhPvefI/C3cT0CfTXJ\nuFjUbKIgSwjNjw6YHtLgoy/hd5+JLUlLco/gzFX/qWbT7tEquOMYpsNKWZj8TLqP\nq6zMiG4Na6feEZte6YPXGrMWlTWN341vDedc+yxQqSug79HJUQcOZs7KyDWztmae\nQxsPE49UV/8XwrfZtZaYyrs4FpD94Z4Q8dzXGL8+qEJjxgcza7W6PROaClubavd1\nVKPm8+aCW77u7SxpR2TFGL6kPdxsKyFijpcunR5V79sUyROfNdzjrAcFWZXK8sbb\n9FlnwuVG677JLv+ZVTX5AxLvW5OB4zt5uS+zB62wJ/Wv+jXGAttSAcJec4iFgCWH\nRvdi/jJoSzRLa3nEzx6pFIzclSCnh0u1xCeLcUBypSiPga8W+6PkuoyQq8U9qs9E\noxG5NvrvlyshwUS9yvcZRGw7Ljlx4jJH/BhIPR8kIBCQj1vna9TziZOrw1Of8hDU\nbHKFG9Pm8Dp2vbjz/2JH39qvxshPKVllGfq+5klPm7yZRUYTiCMAbqwNdL/nsqF2\nRnnyp58XRStJ\n-----END CERTIFICATE-----\n",
+                "is_ca": true,
+                "issuer": "CN=USERTrust RSA Certification Authority,O=The USERTRUST Network,L=Jersey City,ST=New Jersey,C=US",
+                "max_path_length": -1,
+                "not_after": "2038-01-18T23:59:59Z",
+                "not_before": "2021-03-22T00:00:00Z",
+                "public_key_algorithm": "RSA",
+                "serial_number": "279801108986267997430958846641392622020",
+                "sha1_fingerprint": "2b18947a6a9fc7764fd8b5fb18a863b0c6dac24f",
+                "signature_algorithm": "SHA384-RSA",
+                "subject": "CN=Sectigo Public Server Authentication Root R46,O=Sectigo Limited,C=GB",
+                "version": 3
+              },
+              {
+                "cert_pem": "-----BEGIN CERTIFICATE-----\nMIIGTDCCBDSgAwIBAgIQOXpmzCdWNi4NqofKbqvjsTANBgkqhkiG9w0BAQwFADBf\nMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMTYwNAYDVQQD\nEy1TZWN0aWdvIFB1YmxpYyBTZXJ2ZXIgQXV0aGVudGljYXRpb24gUm9vdCBSNDYw\nHhcNMjEwMzIyMDAwMDAwWhcNMzYwMzIxMjM1OTU5WjBgMQswCQYDVQQGEwJHQjEY\nMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMTcwNQYDVQQDEy5TZWN0aWdvIFB1Ymxp\nYyBTZXJ2ZXIgQXV0aGVudGljYXRpb24gQ0EgRFYgUjM2MIIBojANBgkqhkiG9w0B\nAQEFAAOCAY8AMIIBigKCAYEAljZf2HIz7+SPUPQCQObZYcrxLTHYdf1ZtMRe7Yeq\nRPSwygz16qJ9cAWtWNTcuICc++p8Dct7zNGxCpqmEtqifO7NvuB5dEVexXn9RFFH\n12Hm+NtPRQgXIFjx6MSJcNWuVO3XGE57L1mHlcQYj+g4hny90aFh2SCZCDEVkAja\nEMMfYPKuCjHuuF+bzHFb/9gV8P9+ekcHENF2nR1efGWSKwnfG5RawlkaQDpRtZTm\nM64TIsv/r7cyFO4nSjs1jLdXYdz5q3a4L0NoabZfbdxVb+CUEHfB0bpulZQtH1Rv\n38e/lIdP7OTTIlZh6OYL6NhxP8So0/sht/4J9mqIGxRFc0/pC8suja+wcIUna0HB\npXKfXTKpzgis+zmXDL06ASJf5E4A2/m+Hp6b84sfPAwQ766rI65mh50S0Di9E3Pn\n2WcaJc+PILsBmYpgtmgWTR9eV9otfKRUBfzHUHcVgarub/XluEpRlTtZudU5xbFN\nxx/DgMrXLUAPaI60fZ6wA+PTAgMBAAGjggGBMIIBfTAfBgNVHSMEGDAWgBRWc1hk\nlfmSGrASKgRieaFAFYghSTAdBgNVHQ4EFgQUaMASFhgOr872h6YyV6NGUV3LBycw\nDgYDVR0PAQH/BAQDAgGGMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0lBBYwFAYI\nKwYBBQUHAwEGCCsGAQUFBwMCMBsGA1UdIAQUMBIwBgYEVR0gADAIBgZngQwBAgEw\nVAYDVR0fBE0wSzBJoEegRYZDaHR0cDovL2NybC5zZWN0aWdvLmNvbS9TZWN0aWdv\nUHVibGljU2VydmVyQXV0aGVudGljYXRpb25Sb290UjQ2LmNybDCBhAYIKwYBBQUH\nAQEEeDB2ME8GCCsGAQUFBzAChkNodHRwOi8vY3J0LnNlY3RpZ28uY29tL1NlY3Rp\nZ29QdWJsaWNTZXJ2ZXJBdXRoZW50aWNhdGlvblJvb3RSNDYucDdjMCMGCCsGAQUF\nBzABhhdodHRwOi8vb2NzcC5zZWN0aWdvLmNvbTANBgkqhkiG9w0BAQwFAAOCAgEA\nYtOC9Fy+TqECFw40IospI92kLGgoSZGPOSQXMBqmsGWZUQ7rux7cj1du6d9rD6C8\nze1B2eQjkrGkIL/OF1s7vSmgYVafsRoZd/IHUrkoQvX8FZwUsmPu7amgBfaY3g+d\nq1x0jNGKb6I6Bzdl6LgMD9qxp+3i7GQOnd9J8LFSietY6Z4jUBzVoOoz8iAU84OF\nh2HhAuiPw1ai0VnY38RTI+8kepGWVfGxfBWzwH9uIjeooIeaosVFvE8cmYUB4TSH\n5dUyD0jHct2+8ceKEtIoFU/FfHq/mDaVnvcDCZXtIgitdMFQdMZaVehmObyhRdDD\n4NQCs0gaI9AAgFj4L9QtkARzhQLNyRf87Kln+YU0lgCGr9HLg3rGO8q+Y4ppLsOd\nunQZ6ZxPNGIfOApbPVf5hCe58EZwiWdHIMn9lPP6+F404y8NNugbQixBber+x536\nWrZhFZLjEkhp7fFXf9r32rNPfb74X/U90Bdy4lzp3+X1ukh1BuMxA/EEhDoTOS3l\n7ABvc7BYSQubQ2490OcdkIzUh3ZwDrakMVrbaTxUM2p24N6dB+ns2zptWCva6jzW\nr8IWKIMxzxLPv5Kt3ePKcUdvkBU/smqujSczTzzSjIoR5QqQA6lN1ZRSnuHIWCvh\nJEltkYnTAH41QJ6SAWO66GrrUESwN/cgZzL4JLEqz1Y=\n-----END CERTIFICATE-----\n",
+                "is_ca": true,
+                "issuer": "CN=Sectigo Public Server Authentication Root R46,O=Sectigo Limited,C=GB",
+                "max_path_length": 0,
+                "not_after": "2036-03-21T23:59:59Z",
+                "not_before": "2021-03-22T00:00:00Z",
+                "public_key_algorithm": "RSA",
+                "serial_number": "76401540956980317967350201603557417905",
+                "sha1_fingerprint": "dd55b4520291e276588f0dd02fafd83a7368e0fa",
+                "signature_algorithm": "SHA384-RSA",
+                "subject": "CN=Sectigo Public Server Authentication CA DV R36,O=Sectigo Limited,C=GB",
+                "version": 3
+              },
+              {
+                "cert_pem": "-----BEGIN CERTIFICATE-----\nMIIHuDCCBiCgAwIBAgIQQpoM0ALJqV2GN3xNM4T2OjANBgkqhkiG9w0BAQwFADBg\nMQswCQYDVQQGEwJHQjEYMBYGA1UEChMPU2VjdGlnbyBMaW1pdGVkMTcwNQYDVQQD\nEy5TZWN0aWdvIFB1YmxpYyBTZXJ2ZXIgQXV0aGVudGljYXRpb24gQ0EgRFYgUjM2\nMB4XDTI1MDYxMDAwMDAwMFoXDTI2MDYxMDIzNTk1OVowKjEoMCYGA1UEAwwfKi5h\nY3Rpb25zLmdpdGh1YnVzZXJjb250ZW50LmNvbTCCAiIwDQYJKoZIhvcNAQEBBQAD\nggIPADCCAgoCggIBANwvpdsZH4sqaZi93aUO0fMlanlA+9q37qP6fIK7jrhSen2r\nYbJadNPyIc2j2B/iAs+MRBnxfpkNpCpwNZtWJA4LH3YhINRqD/Dt+Xixlkulc8Ga\ner+4EcP1HjqH1pxxVfAMlOfFxFvAWWXA2B4W3PIzPN0r/cGE1RwNTx6PCnIAC06u\nH1NOIGikEwZ11pxGVSc4Ah+LqfnRUfPdmAPONDbnEFyBzq83jKrNQujt/bgncsdt\nZjT3Mq4FGRHDRcsIsVet79wOG3yylFF9Vpnwk6Knzv4pTRnsx+Q2APXAMVIJk3Zn\ns7jmDFmthyWqvL7Ox4lSw5Nf/cG8Dz5OyjKsmQKYGN3CXuBlOML4xyIN/hJ8I6N9\n05swoOBFeSVEIhIaPRakW+TzMS7/G5vi42P+Qr/xQqkpX0bvLTRGq9/5utTA+G8k\nlpKZoXv2wEdaiSVbU9IBRYusoNTCiOiagSXOj2FerI1AH2005UBpi9yfIBJpJXyw\n/BTSPxuELjoa2YCNe4CB4NHJOUEeTScNJhLBdLljiP/909EbvGKDqxXvVCLZLeVe\nqj1ONO41woCic5Esx7IeOeT8+/6U/B+yigBNg4EHOnafFDt6JCs7QCggziSR/I6b\nEtRWsgkysYoi04Ch70820xfRfkoBD0a5ek84gy4cNL3fzJyWp+urwXkZcNcrAgMB\nAAGjggMiMIIDHjAfBgNVHSMEGDAWgBRowBIWGA6vzvaHpjJXo0ZRXcsHJzAdBgNV\nHQ4EFgQUNvfYmW3BgodYLPPz/xli4dQRV90wDgYDVR0PAQH/BAQDAgWgMAwGA1Ud\nEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMEkGA1UdIARC\nMEAwNAYLKwYBBAGyMQECAgcwJTAjBggrBgEFBQcCARYXaHR0cHM6Ly9zZWN0aWdv\nLmNvbS9DUFMwCAYGZ4EMAQIBMIGEBggrBgEFBQcBAQR4MHYwTwYIKwYBBQUHMAKG\nQ2h0dHA6Ly9jcnQuc2VjdGlnby5jb20vU2VjdGlnb1B1YmxpY1NlcnZlckF1dGhl\nbnRpY2F0aW9uQ0FEVlIzNi5jcnQwIwYIKwYBBQUHMAGGF2h0dHA6Ly9vY3NwLnNl\nY3RpZ28uY29tMIIBgAYKKwYBBAHWeQIEAgSCAXAEggFsAWoAdwCWl2S/VViXrfdD\nh2g3CEJ36fA61fak8zZuRqQ/D8qpxgAAAZdat61EAAAEAwBIMEYCIQCA65MwsKyq\nFxSrXqhQR162ZRVldScjNerb+51MWqi4OQIhANk0Ah6wTitCDLqYwkX0KL0ccREH\nfsEoXS+P+y9j1zCdAHcAGYbUxyiqb/66A294Kk0BkarOLXIxD67OXXBBLSVMx9QA\nAAGXWretMAAABAMASDBGAiEAiTj7Lf7XXQo+NcR/gHZ0yMGH20jlJkVUXQYXlJWk\nUjACIQCTfipxukvVKmCpD/rBnyM7OO5aNRZ+Dg0qMa9YHxvxCwB2AA5XlLzzrqk+\nMxssmQez95Dfm8I9cTIl3SGpJaxhxU4hAAABl1q3rREAAAQDAEcwRQIgI7KUJeAI\nkh36VrL7lW7QGYCNLm+yrSHFEe6SfV5TKsECIQCpndHbZIH0Y4TP9YXiUIWkTrUU\nGaWlet40EwANT7SVKzBJBgNVHREEQjBAgh8qLmFjdGlvbnMuZ2l0aHVidXNlcmNv\nbnRlbnQuY29tgh1hY3Rpb25zLmdpdGh1YnVzZXJjb250ZW50LmNvbTANBgkqhkiG\n9w0BAQwFAAOCAYEAPCGSgvwRlgCuKBpSQ9YuuFvKsbMKIgLmVxu/grXpCgx8KdMr\n+fld74WOmyZukk0PfrAm+gYZe+4dDKrzbn8inD6Wz2/UKiXRa9noZ5v0CL6qOy3b\nRPZ8YgHYWrV0YEIqh5St+n1Dc0A1UhgTDFbHCQ/u1Lgw/dFasl6Iz8hnDTfQpoT5\n05R6F3acsR/xKa74zrAWSFyCJo0BxE39KTW8sb71gv99ZFD5Nnj8D0nSdE7nU4af\nIuF/ALfhH+n60VjaBfoeS9M/fQmEekxsZ5RFpmEMkDm3Y36tdDFKtFC9Cb4o9wal\nFkZnwghK+JatRsjAj+5HmW7iKZoptAIK0Z3vKS/ptCql4wnDMDH7bkDsb9KeDEnN\n6eG0PTNhnp+byRcFf+/KfVdNxsNw+sZqTly8bbg8Z2jnUd6o7XPEyIqVRm9KUjQk\nf+Tb1cuwyT11MyCSxfFwHnCtgSh1wIPJRvbcFlL4K9HJYvG1UuXHLsRQB6/KG0oK\nWgluOHrqp6q8psLk\n-----END CERTIFICATE-----\n",
+                "is_ca": false,
+                "issuer": "CN=Sectigo Public Server Authentication CA DV R36,O=Sectigo Limited,C=GB",
+                "max_path_length": -1,
+                "not_after": "2026-06-10T23:59:59Z",
+                "not_before": "2025-06-10T00:00:00Z",
+                "public_key_algorithm": "RSA",
+                "serial_number": "88528921307254621768011639059774764602",
+                "sha1_fingerprint": "7560d6f40fa55195f740ee2b1b7c0b4836cbe103",
+                "signature_algorithm": "SHA384-RSA",
+                "subject": "CN=*.actions.githubusercontent.com",
+                "version": 3
+              }
+            ],
+            "content": null,
+            "id": "d54ffc5863e92be116e7b1bebdacdafbdb976744",
+            "url": "https://token.actions.githubusercontent.com",
+            "verify_chain": true
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "managed",
+      "type": "aws_iam_openid_connect_provider",
+      "name": "github",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:oidc-provider/token.actions.githubusercontent.com",
+            "client_id_list": [
+              "sts.amazonaws.com"
+            ],
+            "id": "arn:aws:iam::099878477985:oidc-provider/token.actions.githubusercontent.com",
+            "tags": {
+              "Name": "askloud-github-oidc"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-github-oidc",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "thumbprint_list": [
+              "2b18947a6a9fc7764fd8b5fb18a863b0c6dac24f"
+            ],
+            "url": "token.actions.githubusercontent.com"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.github_oidc.data.tls_certificate.github"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "managed",
+      "type": "aws_iam_policy",
+      "name": "ecr_push",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:policy/askloud-dev-github-ecr-push",
+            "attachment_count": 0,
+            "description": "",
+            "id": "arn:aws:iam::099878477985:policy/askloud-dev-github-ecr-push",
+            "name": "askloud-dev-github-ecr-push",
+            "name_prefix": "",
+            "path": "/",
+            "policy": "{\"Statement\":[{\"Action\":\"ecr:GetAuthorizationToken\",\"Effect\":\"Allow\",\"Resource\":\"*\"},{\"Action\":[\"ecr:UploadLayerPart\",\"ecr:PutImage\",\"ecr:InitiateLayerUpload\",\"ecr:GetDownloadUrlForLayer\",\"ecr:CompleteLayerUpload\",\"ecr:BatchGetImage\",\"ecr:BatchCheckLayerAvailability\"],\"Effect\":\"Allow\",\"Resource\":[\"arn:aws:ecr:ap-south-1:099878477985:repository/askloud-gui\",\"arn:aws:ecr:ap-south-1:099878477985:repository/askloud-engine\"]}],\"Version\":\"2012-10-17\"}",
+            "policy_id": "ANPAROQJYUCQ262QRS37Z",
+            "tags": {
+              "Name": "askloud-dev-github-ecr-push"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-github-ecr-push",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.aws_caller_identity.current",
+            "module.github_oidc.data.aws_iam_policy_document.ecr_push"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "managed",
+      "type": "aws_iam_role",
+      "name": "github_actions",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:iam::099878477985:role/askloud-dev-github-actions",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\"},\"StringLike\":{\"token.actions.githubusercontent.com:sub\":\"repo:muralisp/askloud:*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::099878477985:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "2026-04-27T00:41:11Z",
+            "description": "",
+            "force_detach_policies": false,
+            "id": "askloud-dev-github-actions",
+            "inline_policy": [],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "askloud-dev-github-actions",
+            "name_prefix": "",
+            "path": "/",
+            "permissions_boundary": "",
+            "tags": {
+              "Name": "askloud-dev-github-actions"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-github-actions",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "unique_id": "AROAROQJYUCQ6FKJAKYUI"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "module.github_oidc.aws_iam_openid_connect_provider.github",
+            "module.github_oidc.data.aws_iam_openid_connect_provider.github",
+            "module.github_oidc.data.aws_iam_policy_document.github_assume",
+            "module.github_oidc.data.tls_certificate.github"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.github_oidc",
+      "mode": "managed",
+      "type": "aws_iam_role_policy_attachment",
+      "name": "ecr_push",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "askloud-dev-github-actions-20260427004112593600000002",
+            "policy_arn": "arn:aws:iam::099878477985:policy/askloud-dev-github-ecr-push",
+            "role": "askloud-dev-github-actions"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "bnVsbA==",
+          "dependencies": [
+            "data.aws_caller_identity.current",
+            "module.github_oidc.aws_iam_openid_connect_provider.github",
+            "module.github_oidc.aws_iam_policy.ecr_push",
+            "module.github_oidc.aws_iam_role.github_actions",
+            "module.github_oidc.data.aws_iam_openid_connect_provider.github",
+            "module.github_oidc.data.aws_iam_policy_document.ecr_push",
+            "module.github_oidc.data.aws_iam_policy_document.github_assume",
+            "module.github_oidc.data.tls_certificate.github"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_eip",
+      "name": "nat",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 0,
+          "attributes": {
+            "address": null,
+            "allocation_id": "eipalloc-0a00f4ef66f216744",
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:elastic-ip/eipalloc-0a00f4ef66f216744",
+            "associate_with_private_ip": null,
+            "association_id": "eipassoc-0de3472e081a17282",
+            "carrier_ip": "",
+            "customer_owned_ip": "",
+            "customer_owned_ipv4_pool": "",
+            "domain": "vpc",
+            "id": "eipalloc-0a00f4ef66f216744",
+            "instance": "",
+            "ipam_pool_id": null,
+            "network_border_group": "ap-south-1",
+            "network_interface": "eni-09ba03adcc0835943",
+            "private_dns": "ip-10-11-0-18.ap-south-1.compute.internal",
+            "private_ip": "10.11.0.18",
+            "ptr_record": "",
+            "public_dns": "ec2-15-207-30-131.ap-south-1.compute.amazonaws.com",
+            "public_ip": "15.207.30.131",
+            "public_ipv4_pool": "amazon",
+            "tags": {
+              "Name": "askloud-dev-nat-eip-ap-south-1a"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-nat-eip-ap-south-1a",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "vpc": true
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiZGVsZXRlIjoxODAwMDAwMDAwMDAsInJlYWQiOjkwMDAwMDAwMDAwMCwidXBkYXRlIjozMDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_internet_gateway",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:internet-gateway/igw-0b98137776516daf0",
+            "id": "igw-0b98137776516daf0",
+            "owner_id": "099878477985",
+            "tags": {
+              "Name": "askloud-dev-igw"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-igw",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_nat_gateway",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 0,
+          "attributes": {
+            "allocation_id": "eipalloc-0a00f4ef66f216744",
+            "association_id": "eipassoc-0de3472e081a17282",
+            "connectivity_type": "public",
+            "id": "nat-0113e51123f4a76a1",
+            "network_interface_id": "eni-09ba03adcc0835943",
+            "private_ip": "10.11.0.18",
+            "public_ip": "15.207.30.131",
+            "secondary_allocation_ids": [],
+            "secondary_private_ip_address_count": 0,
+            "secondary_private_ip_addresses": [],
+            "subnet_id": "subnet-02d5aeeac183b7fc5",
+            "tags": {
+              "Name": "askloud-dev-nat-ap-south-1a"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-nat-ap-south-1a",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTgwMDAwMDAwMDAwMCwidXBkYXRlIjo2MDAwMDAwMDAwMDB9fQ==",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "private",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:route-table/rtb-0de247888a90993de",
+            "id": "rtb-0de247888a90993de",
+            "owner_id": "099878477985",
+            "propagating_vgws": [],
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "nat-0113e51123f4a76a1",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Name": "askloud-dev-private-rt-ap-south-1a"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-private-rt-ap-south-1a",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_nat_gateway.this",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1b",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:route-table/rtb-071db6c73302549ba",
+            "id": "rtb-071db6c73302549ba",
+            "owner_id": "099878477985",
+            "propagating_vgws": [],
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "nat-0113e51123f4a76a1",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Name": "askloud-dev-private-rt-ap-south-1b"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-private-rt-ap-south-1b",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_nat_gateway.this",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1c",
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:route-table/rtb-0b9a24894b87419bc",
+            "id": "rtb-0b9a24894b87419bc",
+            "owner_id": "099878477985",
+            "propagating_vgws": [],
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "nat-0113e51123f4a76a1",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Name": "askloud-dev-private-rt-ap-south-1c"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-private-rt-ap-south-1c",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_nat_gateway.this",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:route-table/rtb-06cedf3e05b2ae113",
+            "id": "rtb-06cedf3e05b2ae113",
+            "owner_id": "099878477985",
+            "propagating_vgws": [],
+            "route": [
+              {
+                "carrier_gateway_id": "",
+                "cidr_block": "0.0.0.0/0",
+                "core_network_arn": "",
+                "destination_prefix_list_id": "",
+                "egress_only_gateway_id": "",
+                "gateway_id": "igw-0b98137776516daf0",
+                "ipv6_cidr_block": "",
+                "local_gateway_id": "",
+                "nat_gateway_id": "",
+                "network_interface_id": "",
+                "transit_gateway_id": "",
+                "vpc_endpoint_id": "",
+                "vpc_peering_connection_id": ""
+              }
+            ],
+            "tags": {
+              "Name": "askloud-dev-public-rt"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-public-rt",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "private",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-0440463a394637fd9",
+            "route_table_id": "rtb-0de247888a90993de",
+            "subnet_id": "subnet-0f788edd1ccefe44f",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_nat_gateway.this",
+            "module.vpc.aws_route_table.private",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1b",
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-09e46032871e79ca3",
+            "route_table_id": "rtb-071db6c73302549ba",
+            "subnet_id": "subnet-0238df71cf93465f3",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_nat_gateway.this",
+            "module.vpc.aws_route_table.private",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1c",
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-01516a4d2ee19b25b",
+            "route_table_id": "rtb-0b9a24894b87419bc",
+            "subnet_id": "subnet-05a6cb0d2bbcb74a9",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_eip.nat",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_nat_gateway.this",
+            "module.vpc.aws_route_table.private",
+            "module.vpc.aws_subnet.private",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_route_table_association",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-0ec7ee432ef7d8e9c",
+            "route_table_id": "rtb-06cedf3e05b2ae113",
+            "subnet_id": "subnet-02d5aeeac183b7fc5",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_route_table.public",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1b",
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-05f7bbc247112e4d1",
+            "route_table_id": "rtb-06cedf3e05b2ae113",
+            "subnet_id": "subnet-06ff784de3ac1ec49",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_route_table.public",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1c",
+          "schema_version": 0,
+          "attributes": {
+            "gateway_id": "",
+            "id": "rtbassoc-01f36efae8a912e8d",
+            "route_table_id": "rtb-06cedf3e05b2ae113",
+            "subnet_id": "subnet-0744872a9925dca22",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjozMDAwMDAwMDAwMDAsImRlbGV0ZSI6MzAwMDAwMDAwMDAwLCJ1cGRhdGUiOjEyMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_internet_gateway.this",
+            "module.vpc.aws_route_table.public",
+            "module.vpc.aws_subnet.public",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "private",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:subnet/subnet-0f788edd1ccefe44f",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "ap-south-1a",
+            "availability_zone_id": "aps1-az1",
+            "cidr_block": "10.11.128.0/20",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0f788edd1ccefe44f",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "099878477985",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "askloud-dev-private-ap-south-1a",
+              "kubernetes.io/cluster/askloud-dev": "owned",
+              "kubernetes.io/role/internal-elb": "1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-private-ap-south-1a",
+              "Owner": "platform-team",
+              "Project": "askloud",
+              "kubernetes.io/cluster/askloud-dev": "owned",
+              "kubernetes.io/role/internal-elb": "1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1b",
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:subnet/subnet-0238df71cf93465f3",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "ap-south-1b",
+            "availability_zone_id": "aps1-az3",
+            "cidr_block": "10.11.144.0/20",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0238df71cf93465f3",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "099878477985",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "askloud-dev-private-ap-south-1b",
+              "kubernetes.io/cluster/askloud-dev": "owned",
+              "kubernetes.io/role/internal-elb": "1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-private-ap-south-1b",
+              "Owner": "platform-team",
+              "Project": "askloud",
+              "kubernetes.io/cluster/askloud-dev": "owned",
+              "kubernetes.io/role/internal-elb": "1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1c",
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:subnet/subnet-05a6cb0d2bbcb74a9",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "ap-south-1c",
+            "availability_zone_id": "aps1-az2",
+            "cidr_block": "10.11.160.0/20",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-05a6cb0d2bbcb74a9",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": false,
+            "outpost_arn": "",
+            "owner_id": "099878477985",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "askloud-dev-private-ap-south-1c",
+              "kubernetes.io/cluster/askloud-dev": "owned",
+              "kubernetes.io/role/internal-elb": "1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-private-ap-south-1c",
+              "Owner": "platform-team",
+              "Project": "askloud",
+              "kubernetes.io/cluster/askloud-dev": "owned",
+              "kubernetes.io/role/internal-elb": "1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_subnet",
+      "name": "public",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "index_key": "ap-south-1a",
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:subnet/subnet-02d5aeeac183b7fc5",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "ap-south-1a",
+            "availability_zone_id": "aps1-az1",
+            "cidr_block": "10.11.0.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-02d5aeeac183b7fc5",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "099878477985",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "askloud-dev-public-ap-south-1a",
+              "kubernetes.io/cluster/askloud-dev": "shared",
+              "kubernetes.io/role/elb": "1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-public-ap-south-1a",
+              "Owner": "platform-team",
+              "Project": "askloud",
+              "kubernetes.io/cluster/askloud-dev": "shared",
+              "kubernetes.io/role/elb": "1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1b",
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:subnet/subnet-06ff784de3ac1ec49",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "ap-south-1b",
+            "availability_zone_id": "aps1-az3",
+            "cidr_block": "10.11.1.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-06ff784de3ac1ec49",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "099878477985",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "askloud-dev-public-ap-south-1b",
+              "kubernetes.io/cluster/askloud-dev": "shared",
+              "kubernetes.io/role/elb": "1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-public-ap-south-1b",
+              "Owner": "platform-team",
+              "Project": "askloud",
+              "kubernetes.io/cluster/askloud-dev": "shared",
+              "kubernetes.io/role/elb": "1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_vpc.this"
+          ]
+        },
+        {
+          "index_key": "ap-south-1c",
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:subnet/subnet-0744872a9925dca22",
+            "assign_ipv6_address_on_creation": false,
+            "availability_zone": "ap-south-1c",
+            "availability_zone_id": "aps1-az2",
+            "cidr_block": "10.11.2.0/24",
+            "customer_owned_ipv4_pool": "",
+            "enable_dns64": false,
+            "enable_lni_at_device_index": 0,
+            "enable_resource_name_dns_a_record_on_launch": false,
+            "enable_resource_name_dns_aaaa_record_on_launch": false,
+            "id": "subnet-0744872a9925dca22",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_association_id": "",
+            "ipv6_native": false,
+            "map_customer_owned_ip_on_launch": false,
+            "map_public_ip_on_launch": true,
+            "outpost_arn": "",
+            "owner_id": "099878477985",
+            "private_dns_hostname_type_on_launch": "ip-name",
+            "tags": {
+              "Name": "askloud-dev-public-ap-south-1c",
+              "kubernetes.io/cluster/askloud-dev": "shared",
+              "kubernetes.io/role/elb": "1"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-public-ap-south-1c",
+              "Owner": "platform-team",
+              "Project": "askloud",
+              "kubernetes.io/cluster/askloud-dev": "shared",
+              "kubernetes.io/role/elb": "1"
+            },
+            "timeouts": null,
+            "vpc_id": "vpc-0d59c8e3576981e43"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo2MDAwMDAwMDAwMDAsImRlbGV0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "data.aws_availability_zones.available",
+            "module.vpc.aws_vpc.this"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.vpc",
+      "mode": "managed",
+      "type": "aws_vpc",
+      "name": "this",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "arn": "arn:aws:ec2:ap-south-1:099878477985:vpc/vpc-0d59c8e3576981e43",
+            "assign_generated_ipv6_cidr_block": false,
+            "cidr_block": "10.11.0.0/16",
+            "default_network_acl_id": "acl-0cf1a1d1accc6cbca",
+            "default_route_table_id": "rtb-046f2c9e02d217831",
+            "default_security_group_id": "sg-0c721791051f71a0c",
+            "dhcp_options_id": "dopt-0d898ed25a454be5d",
+            "enable_dns_hostnames": true,
+            "enable_dns_support": true,
+            "enable_network_address_usage_metrics": false,
+            "id": "vpc-0d59c8e3576981e43",
+            "instance_tenancy": "default",
+            "ipv4_ipam_pool_id": null,
+            "ipv4_netmask_length": null,
+            "ipv6_association_id": "",
+            "ipv6_cidr_block": "",
+            "ipv6_cidr_block_network_border_group": "",
+            "ipv6_ipam_pool_id": "",
+            "ipv6_netmask_length": 0,
+            "main_route_table_id": "rtb-046f2c9e02d217831",
+            "owner_id": "099878477985",
+            "tags": {
+              "Name": "askloud-dev-vpc"
+            },
+            "tags_all": {
+              "Environment": "dev",
+              "ManagedBy": "terraform",
+              "Name": "askloud-dev-vpc",
+              "Owner": "platform-team",
+              "Project": "askloud"
+            }
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "object_kind": "var",
+      "config_addr": "var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "var.environment",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.ebs_csi.var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "module.ebs_csi.var.environment",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.ecr.var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "module.ecr.var.environment",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.eks.var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "module.eks.var.environment",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.github_oidc.var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "module.github_oidc.var.environment",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "object_kind": "var",
+      "config_addr": "module.vpc.var.environment",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "module.vpc.var.environment",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

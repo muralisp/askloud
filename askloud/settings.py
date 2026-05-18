@@ -9,6 +9,22 @@ API_KEY  = os.environ.get("ANTHROPIC_API_KEY")
 MODEL_ID = "claude-haiku-4-5-20251001"
 DATA_DIR = "data"
 CONFIG_DIR = "config"
+
+# DynamoDB backend — when set, the engine loads inventory from DynamoDB
+# instead of local JSON files.
+DYNAMODB_TABLE   = os.environ.get("ASKLOUD_DYNAMODB_TABLE",   "askloud-central-ops-inventory")
+DYNAMODB_REGION  = os.environ.get("ASKLOUD_DYNAMODB_REGION",  "ap-south-1")
+DYNAMODB_PROFILE = os.environ.get("ASKLOUD_DYNAMODB_PROFILE", "askloud_central_ops")
+
+# Account ID → friendly name used as the Account field in DynamoDB mode.
+# Mirrors the directory-name convention used in local file mode.
+# Override via env var as JSON: ASKLOUD_ACCOUNT_ALIASES='{"123456789012":"prod"}'
+import json as _json
+_alias_env = os.environ.get("ASKLOUD_ACCOUNT_ALIASES", "")
+ACCOUNT_ALIASES: dict[str, str] = _json.loads(_alias_env) if _alias_env else {
+    "099878477985": "dev",
+    "803760314511": "central-ops",
+}
 MAX_HISTORY_TURNS  = 10
 CLI_TIMEOUT        = 120  # seconds per subprocess call
 MAX_LIVE_RETRIES   = 2    # max error-feedback retries in live mode
@@ -56,15 +72,82 @@ FIELD_ALIASES = {
         "vmsize":       "hardwareProfile.vmSize",
         "ostype":       "storageProfile.osDisk.osType",
     },
+    "security_group": {
+        "groupid":   "GroupId",
+        "groupname": "GroupName",
+        "vpcid":     "VpcId",
+    },
+    "iam_role": {
+        "rolename": "RoleName",
+        "roleid":   "RoleId",
+    },
+    "nat_gateway": {
+        "natgatewayid": "NatGatewayId",
+        "subnetid":     "SubnetId",
+        "publicip":     "PublicIp",
+        "privateip":    "PrivateIp",
+    },
+    "igw": {
+        "internetgatewayid": "InternetGatewayId",
+        "vpcid":             "VpcId",
+    },
+    "eip": {
+        "allocationid": "AllocationId",
+        "publicip":     "PublicIp",
+    },
+    "route_table": {
+        "routetableid": "RouteTableId",
+        "vpcid":        "VpcId",
+    },
+    "lambda_function": {
+        "functionname": "FunctionName",
+        "runtime":      "Runtime",
+    },
+    "sqs_queue": {
+        "queuename": "QueueName",
+        "queueurl":  "QueueUrl",
+    },
+    "dynamodb_table": {
+        "tablename":   "TableName",
+        "billingmode": "BillingMode",
+    },
+    "ecr_repository": {
+        "repositoryname": "RepositoryName",
+        "repositoryurl":  "RepositoryUrl",
+    },
+    "event_bus": {
+        "busname": "BusName",
+    },
+    "eventbridge_rule": {
+        "rulename":     "RuleName",
+        "state":        "State",
+        "eventbusname": "EventBusName",
+    },
+    "log_group": {
+        "loggroupname": "LogGroupName",
+    },
 }
 
 # Unique-ID field per resource type — used for global deduplication and targeted refresh merges.
 DEDUP_FIELDS = {
-    "ec2":    "InstanceId",
-    "vpc":    "VpcId",
-    "subnet": "SubnetId",
-    "gce":    "id",
-    "vm":     "id",
+    "ec2":             "InstanceId",
+    "vpc":             "VpcId",
+    "subnet":          "SubnetId",
+    "security_group":  "GroupId",
+    "iam_role":        "RoleId",
+    "igw":             "InternetGatewayId",
+    "nat_gateway":     "NatGatewayId",
+    "eip":             "AllocationId",
+    "route_table":     "RouteTableId",
+    "lambda_function": "FunctionName",
+    "sqs_queue":       "QueueName",
+    "dynamodb_table":  "TableName",
+    "event_bus":       "BusName",
+    "eventbridge_rule": "RuleName",
+    "log_group":       "LogGroupName",
+    "ecr_repository":  "RepositoryName",
+    "gce":             "id",
+    "vm":              "id",
 }
 
 # System/internal tag key prefixes stripped from the LLM schema to reduce input tokens.
@@ -90,7 +173,7 @@ ANSI_RESET = "\033[0m"
 
 # Prompt colors — change these to restyle the interactive prompt.
 # Use standard ANSI codes or 256-color: \033[38;5;<0-255>m
-PROMPT_MODE_COLOR = "\033[38;5;255m"   # lavender — wraps [snapshot: Xmin old] / [live]
+PROMPT_MODE_COLOR = "\033[38;5;255m"   # lavender — wraps [inventory] / [live]
 PROMPT_ASK_COLOR  = "\033[38;5;255m"   # bright white — wraps "Ask >"
 
 # CLI binary name and the flag that forces JSON output, per provider.

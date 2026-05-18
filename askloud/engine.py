@@ -6,6 +6,7 @@ refresh into the public-facing interface used by the entry point scripts.
 """
 
 import os
+import shutil
 import sys
 import json
 import re
@@ -16,7 +17,7 @@ try:
 except ImportError:
     pass  # not available on Windows; degrade silently
 
-from .settings  import API_KEY, MODEL_ID, MAX_HISTORY_TURNS, MAX_LIVE_RETRIES, PROVIDER_COLORS, ANSI_RESET, PROMPT_MODE_COLOR, PROMPT_ASK_COLOR
+from .settings  import API_KEY, MODEL_ID, MAX_HISTORY_TURNS, MAX_LIVE_RETRIES, PROVIDER_COLORS, ANSI_RESET, PROMPT_MODE_COLOR, PROMPT_ASK_COLOR, DYNAMODB_TABLE, DYNAMODB_REGION, DYNAMODB_PROFILE
 from .loader    import DataLoader
 from .prompt    import build_system_prompt
 from .filters   import is_direct_search, record_match_evidence, apply_filters, cell
@@ -24,24 +25,31 @@ from .display   import print_table, CostTracker
 from .refresh   import execute_refresh
 from .live      import get_aws_profiles, build_live_system_prompt, execute_live_plan
 
-MODE_SNAPSHOT = "snapshot"
-MODE_LIVE     = "live"
+MODE_INVENTORY = "inventory"
+MODE_LIVE      = "live"
+MODE_SNAPSHOT  = MODE_INVENTORY   # backward-compat alias
 
 
 class CloudInventoryEngine:
 
-    def __init__(self, mode: str = MODE_SNAPSHOT):
+    def __init__(self, mode: str = MODE_INVENTORY, read_only: bool = False):
         self._llm_client: anthropic.Anthropic = None   # created lazily
         self.history: list  = []
         self._is_retry      = False
         self.mode           = mode
+        self.read_only      = read_only
 
         self._loader        = DataLoader()
         self._cost          = CostTracker()
 
         print("\033[90mLoading inventory data...\033[0m")
         self._loader.load_configs()
-        self._loader.load_data()
+
+        if DYNAMODB_TABLE:
+            self._load_from_dynamodb()
+        else:
+            self._loader.load_data()
+
         self._loader.extract_schemas()
         self._loader.build_field_maps()
         self.system_prompt = build_system_prompt(self._loader)
@@ -50,6 +58,36 @@ class CloudInventoryEngine:
         self._live_system_prompt = build_live_system_prompt(self._live_profiles)
 
         print("\033[90mReady.\033[0m\n")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # DynamoDB data source
+    # ─────────────────────────────────────────────────────────────────────────
+
+    def _load_from_dynamodb(self):
+        """
+        Load one schema-sample record per resource type from DynamoDB at startup.
+        Only used to build field schemas and the system prompt — actual records are
+        fetched per query by execute_plan() via query_resource().
+        """
+        from .dynamo import load_schema_samples
+
+        try:
+            samples = load_schema_samples(DYNAMODB_TABLE, DYNAMODB_REGION, DYNAMODB_PROFILE)
+        except Exception as exc:
+            print(f"\033[31mDynamoDB schema load failed: {exc}\033[0m")
+            print("\033[33mFalling back to local JSON files.\033[0m")
+            self._loader.load_data()
+            return
+
+        loader = self._loader
+        for rt, records in samples.items():
+            loader.data[rt]           = records   # single sample — schema use only
+            loader.record_counts[rt]  = len(records)
+            loader.populated_meta[rt] = loader._compute_populated_meta(records)
+            print(f"\033[90m  {rt}: schema ready [dynamodb]\033[0m")
+
+        if not samples:
+            print("\033[33mDynamoDB table is empty — no inventory records found.\033[0m")
 
     # ─────────────────────────────────────────────────────────────────────────
     # Direct search (no LLM call)
@@ -61,13 +99,23 @@ class CloudInventoryEngine:
         Displays config columns plus a 'Matched' column showing which field matched.
         Returns True if any results were found.
         """
-        term_lower  = term.lower()
-        found_any   = False
-        loader      = self._loader
+        term_lower       = term.lower()
+        found_any        = False
+        collected_tables = []
+        loader           = self._loader
 
         for rt in sorted(loader.data):
+            if DYNAMODB_TABLE:
+                from .dynamo import query_resource as _ddb_query
+                try:
+                    type_records = _ddb_query(DYNAMODB_TABLE, DYNAMODB_REGION, rt, DYNAMODB_PROFILE)
+                except Exception:
+                    type_records = []
+            else:
+                type_records = loader.data[rt]
+
             hits = []
-            for r in loader.data[rt]:
+            for r in type_records:
                 evidence = record_match_evidence(r, term_lower)
                 if evidence:
                     label, val = evidence
@@ -78,7 +126,8 @@ class CloudInventoryEngine:
 
             fmap          = loader.field_maps.get(rt, {})
             config_fields = loader.configs.get(rt, [])
-            meta          = loader.populated_meta.get(rt, set())
+            hit_records   = [r for r, _ in hits]
+            meta          = loader._compute_populated_meta(hit_records) if DYNAMODB_TABLE else loader.populated_meta.get(rt, set())
             columns = [
                 (fname, fmap[fname])
                 for fname in config_fields
@@ -97,13 +146,13 @@ class CloudInventoryEngine:
                 for r, label in hits
             ]
             provider = hits[0][0].get("Provider") if hits else self._provider_for(rt)
-            print_table(f"[{rt}] {term}", headers, rows, provider=provider)
-            print()
+            collected_tables.append({"tab": rt, "title": f"[{rt}] {term}", "headers": headers, "rows": rows, "provider": provider})
             found_any = True
 
         if not found_any:
             print(f"\033[33mNo results found for '{term}'.\033[0m")
 
+        _render_tables(collected_tables)
         self._cost.record_direct_search()
         return found_any
 
@@ -120,11 +169,24 @@ class CloudInventoryEngine:
             print(f"\033[33m{plan['unavailable']}\033[0m")
             return True
 
-        bindings    = {}
-        first_shown = True
-        loader      = self._loader
+        bindings         = {}
+        first_shown      = True
+        collected_tables = []
+        loader           = self._loader
 
         for step in plan.get("steps", []):
+            # Terraform change step — edit .tf, plan, apply
+            if step.get("action") == "terraform_change":
+                if self.read_only:
+                    print("\033[31mRead-only mode — Terraform changes are disabled.\033[0m")
+                    print("\033[33mRestart without --read-only to make changes.\033[0m\n")
+                    first_shown = False
+                    continue
+                from .terraform_change import execute_terraform_change
+                execute_terraform_change(step, bindings, loader=loader)
+                first_shown = False
+                continue
+
             # Refresh step — fetch live data, merge, rebuild prompt
             if step.get("action") == "refresh":
                 step = _interpolate_bindings(step, bindings)
@@ -134,18 +196,29 @@ class CloudInventoryEngine:
                 continue
 
             resource = step.get("resource")
-            if resource not in loader.data:
-                print(f"\033[31mUnknown resource '{resource}'. Available: {', '.join(sorted(loader.data))}\033[0m")
+            known = set(loader.data) | set(loader.configs) if DYNAMODB_TABLE else set(loader.data)
+            if resource not in known:
+                print(f"\033[31mUnknown resource '{resource}'. Available: {', '.join(sorted(known))}\033[0m")
                 continue
 
-            records = apply_filters(list(loader.data[resource]), step, bindings)
+            if DYNAMODB_TABLE:
+                from .dynamo import query_resource as _ddb_query
+                try:
+                    all_records = _ddb_query(DYNAMODB_TABLE, DYNAMODB_REGION, resource, DYNAMODB_PROFILE)
+                except Exception as exc:
+                    print(f"\033[31mDynamoDB query failed for {resource}: {exc}\033[0m")
+                    all_records = []
+            else:
+                all_records = list(loader.data[resource])
+
+            records = apply_filters(all_records, step, bindings)
             self._cost.record_result_tokens(records)
 
             # When filters produce no results, tell the user what IS available
-            # in the snapshot for this resource type so they know whether to use /live.
+            # in inventory for this resource type so they know whether to use /live.
             if not records and not step.get("bind") and step.get("show", True):
-                all_of_type = loader.data.get(resource, [])
-                title = plan.get("title", resource) if first_shown else f"[{resource}]"
+                all_of_type = all_records if DYNAMODB_TABLE else loader.data.get(resource, [])
+                title = f"[{resource}]"
                 if all_of_type:
                     accounts = sorted({r.get("Account", "") for r in all_of_type if r.get("Account") and r.get("Account") != "N/A"})
                     regions  = sorted({r.get("Region",  "") for r in all_of_type if r.get("Region")  and r.get("Region")  != "N/A"})
@@ -154,23 +227,27 @@ class CloudInventoryEngine:
                         parts.append("accounts: " + ", ".join(accounts))
                     if regions:
                         parts.append("regions: " + ", ".join(regions))
-                    hint = f"Snapshot has {resource} data for {'; '.join(parts)}." if parts else f"Snapshot has {resource} data, but none matched."
+                    hint = f"Inventory has {resource} data for {'; '.join(parts)}." if parts else f"Inventory has {resource} data, but none matched."
                     print(f"\033[33m{title} — no results.\033[0m")
                     print(f"\033[33m{hint}  Use /live to query other accounts in real time.\033[0m\n")
                 else:
-                    print(f"\033[33m{title} — no {resource} data in snapshot.  Use /live to fetch it.\033[0m\n")
+                    print(f"\033[33m{title} — no {resource} data in inventory.  Use /live to fetch it.\033[0m\n")
                 first_shown = False
                 continue
 
             if step.get("bind") and records:
                 for var_name, path in step["bind"].items():
                     bindings[var_name] = cell(records[0], path, default="")
+            elif step.get("bind") and not records:
+                missing = ", ".join(step["bind"].keys())
+                print(f"\033[31mNo {resource} records matched — could not resolve: {missing}.\033[0m")
+                print(f"\033[33mCheck that the resource exists in inventory or refresh with /live.\033[0m\n")
 
             if not step.get("show", True):
                 continue
 
             if step.get("count_only"):
-                title = plan.get("title", resource) if first_shown else f"[{resource}]"
+                title = f"[{resource}]"
                 print(f"\033[33m{title}\033[0m")
                 print(f"{len(records):,} {resource} record{'s' if len(records) != 1 else ''} match.")
                 print()
@@ -208,12 +285,12 @@ class CloudInventoryEngine:
                 for r in records
             ]
 
-            title    = plan.get("title", "") if first_shown else f"[{resource}]"
+            title    = f"[{resource}]"
             provider = records[0].get("Provider") if records else self._provider_for(resource)
-            print_table(title, headers, rows, provider=provider)
+            collected_tables.append({"tab": resource, "title": title, "headers": headers, "rows": rows, "provider": provider})
             first_shown = False
-            print()
 
+        _render_tables(collected_tables)
         return not first_shown
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -221,12 +298,12 @@ class CloudInventoryEngine:
     # ─────────────────────────────────────────────────────────────────────────
 
     def process_query(self, user_query: str) -> bool:
-        """Route the query to snapshot or live processing based on current mode."""
+        """Route the query to inventory or live processing based on current mode."""
         if self.mode == MODE_LIVE:
             return self._process_live_query(user_query)
-        return self._process_snapshot_query(user_query)
+        return self._process_inventory_query(user_query)
 
-    def _process_snapshot_query(self, user_query: str) -> bool:
+    def _process_inventory_query(self, user_query: str) -> bool:
         """Snapshot mode: translate query to a JSON plan and execute against local data."""
         self.history.append({"role": "user", "content": user_query})
         self._trim_history()
@@ -246,7 +323,7 @@ class CloudInventoryEngine:
                 self.history.append({"role": "assistant", "content": raw})
 
                 try:
-                    plan = json.loads(raw)
+                    plan, _ = json.JSONDecoder().raw_decode(raw)
                 except json.JSONDecodeError as e:
                     print(f"\033[31mLLM returned invalid JSON: {e}\033[0m")
                     self.history.append({
@@ -279,7 +356,7 @@ class CloudInventoryEngine:
             for attempt in range(MAX_LIVE_RETRIES + 1):
                 response = self._llm.messages.create(
                     model=MODEL_ID,
-                    max_tokens=2048,
+                    max_tokens=4096,
                     system=[{
                         "type": "text",
                         "text": self._live_system_prompt,
@@ -397,14 +474,17 @@ class CloudInventoryEngine:
                 if _cmd == "/live":
                     self._switch_mode(MODE_LIVE)
                     continue
-                if _cmd in ("/snapshot", "/snap"):
-                    self._switch_mode(MODE_SNAPSHOT)
+                if _cmd in ("/inventory", "/inv"):
+                    self._switch_mode(MODE_INVENTORY)
                     continue
                 if _cmd in ("/mode", "/?"):
-                    print(f"Current mode: {self.mode}  (switch with /live or /snapshot)")
+                    print(f"Current mode: {self.mode}  (switch with /live or /inventory)")
+                    continue
+                if _cmd in ("/reload", "/refresh"):
+                    self._reload_inventory()
                     continue
                 if _cmd.startswith("/"):
-                    print(f"Unknown command '{user_query}'. Available: /live  /snapshot  /snap  /mode  !<shell>")
+                    print(f"Unknown command '{user_query}'. Available: /live  /inventory  /inv  /mode  /reload  !<shell>")
                     continue
 
                 if user_query.startswith("!"):
@@ -432,25 +512,30 @@ class CloudInventoryEngine:
 
     def _print_header(self):
         print("### Askloud — Cloud Inventory Chat Engine ###")
-        print(f"Mode: {self.mode}  |  Resources: {', '.join(sorted(self._loader.data))}")
-        if self.mode == MODE_SNAPSHOT:
-            age = self._snapshot_age_str()
-            age_info = f"  |  Snapshot: {age} old" if age else ""
-            print(f"Single-token input → direct search (no LLM).{age_info}")
+        ro_tag = "  |  \033[31m[read-only — changes disabled]\033[0m" if self.read_only else ""
+        print(f"Mode: {self.mode}  |  Resources: {', '.join(sorted(self._loader.data))}{ro_tag}")
+        if self.mode == MODE_INVENTORY:
+            if DYNAMODB_TABLE:
+                print(f"Data source: DynamoDB ({DYNAMODB_TABLE}) — per-query mode  |  Single-token → direct search (no LLM).")
+            else:
+                age = self._inventory_age_str()
+                age_info = f"  |  Inventory: {age} old" if age else ""
+                print(f"Single-token input → direct search (no LLM).{age_info}")
         else:
             print(f"Live mode — {len(self._live_profiles)} AWS profiles available.")
-        print("Commands: /live  /snapshot  /mode  !<shell cmd>  exit")
+        print("Commands: /live  /inventory  /mode  /reload  !<shell cmd>  exit")
         print("-" * 50)
 
     def _make_prompt(self) -> str:
-        if self.mode == MODE_SNAPSHOT:
-            age = self._snapshot_age_str()
-            label = f"snapshot: {age} old" if age else "snapshot"
+        if self.mode == MODE_INVENTORY:
+            age = self._inventory_age_str()
+            label = f"inventory: {age} old" if age else "inventory"
         else:
             label = self.mode
-        return f"\n{PROMPT_MODE_COLOR}[{label}]{ANSI_RESET} {PROMPT_ASK_COLOR}Ask >{ANSI_RESET} "
+        ro = " \033[31mread-only\033[0m" if self.read_only else ""
+        return f"\n{PROMPT_MODE_COLOR}[{label}]{ANSI_RESET}{ro} {PROMPT_ASK_COLOR}Ask >{ANSI_RESET} "
 
-    def _snapshot_age_str(self) -> str:
+    def _inventory_age_str(self) -> str:
         """Return the age of the oldest loaded data file as a compact string, e.g. '6h', '2d 4h'."""
         oldest = None
         for sources in self._loader.file_sources.values():
@@ -472,18 +557,49 @@ class CloudInventoryEngine:
         h = rem // 3600
         return f"{d}d {h}h" if h else f"{d}d"
 
+    def _reload_inventory(self):
+        """Re-scan DynamoDB (or local files) and rebuild the system prompt in-place."""
+        print("\033[90mReloading inventory data...\033[0m")
+
+        if DYNAMODB_TABLE:
+            from .dynamo import clear_query_cache
+            clear_query_cache()
+
+        # Clear all loader state so nothing stale leaks through
+        self._loader.data.clear()
+        self._loader.record_counts.clear()
+        self._loader.populated_meta.clear()
+        self._loader.schemas.clear()
+        self._loader.field_maps.clear()
+
+        if DYNAMODB_TABLE:
+            self._load_from_dynamodb()
+        else:
+            self._loader.load_data()
+
+        self._loader.extract_schemas()
+        self._loader.build_field_maps()
+        self.system_prompt = build_system_prompt(self._loader)
+
+        # Clear conversation history so the LLM reasons from fresh inventory,
+        # not from counts or filters it saw before the reload.
+        self.history = []
+
+        total = sum(self._loader.record_counts.values())
+        print(f"\033[90mInventory reloaded — {total} record(s) across {len(self._loader.data)} resource type(s).\033[0m\n")
+
     def _switch_mode(self, new_mode: str):
         if new_mode == self.mode:
             print(f"Already in {self.mode} mode.")
             return
         self.mode    = new_mode
-        self.history = []   # clear snapshot history on switch
+        self.history = []   # clear history on mode switch
         print(f"\033[33mSwitched to {new_mode} mode.\033[0m")
 
     def _call_llm(self):
         return self._llm.messages.create(
             model=MODEL_ID,
-            max_tokens=2048,
+            max_tokens=4096,
             system=[{"type": "text", "text": self.system_prompt, "cache_control": {"type": "ephemeral"}}],
             messages=self.history,
         )
@@ -553,6 +669,46 @@ def _run_shell(cmd: str):
         print(result.stdout, end="")
     if result.stderr:
         print(result.stderr, end="", file=sys.stderr)
+
+
+def _table_exceeds_width(tbl: dict, terminal_width: int) -> bool:
+    """Return True if the table would overflow the terminal when printed."""
+    headers = tbl["headers"]
+    rows    = tbl["rows"]
+    widths  = [len(h) for h in headers]
+    for row in rows:
+        for i, c in enumerate(row):
+            if i < len(widths):
+                widths[i] = max(widths[i], len(c))
+    # print_table uses 2-space separator between columns
+    total = sum(widths) + 2 * (len(widths) - 1)
+    return total > terminal_width
+
+
+def _render_tables(tables: list) -> None:
+    """
+    Render collected table data.  Uses the Textual tab viewer when on a tty and:
+      • there are 2+ tables, OR
+      • any single table is wider than the terminal.
+    Falls back to sequential print_table calls otherwise (GUI, pipes, narrow tables).
+    """
+    if not tables:
+        return
+    if sys.stdout.isatty():
+        terminal_width = shutil.get_terminal_size((80, 24)).columns
+        needs_tui = len(tables) >= 2 or any(
+            _table_exceeds_width(t, terminal_width) for t in tables
+        )
+        if needs_tui:
+            try:
+                from .tui import show_tabbed_results
+                show_tabbed_results(tables)
+                return
+            except ImportError:
+                pass  # textual not installed — fall through to sequential output
+    for tbl in tables:
+        print_table(tbl["title"], tbl["headers"], tbl["rows"], provider=tbl["provider"])
+        print()
 
 
 def _interpolate_bindings(step: dict, bindings: dict) -> dict:

@@ -60,9 +60,12 @@ def api_query(request):
     if not query:
         return JsonResponse({"error": "query is required"}, status=400)
 
-    mgr     = _mgr()
-    sid     = _session_id(request)
-    result  = mgr.execute_query(sid, query)
+    # Allow the frontend to pass a tab-specific session ID so that Inventory
+    # and Live tabs maintain independent conversation histories.
+    client_sid = (body.get("session_id") or "").strip()
+    mgr = _mgr()
+    sid = client_sid if client_sid else _session_id(request)
+    result = mgr.execute_query(sid, query)
     return JsonResponse(result)
 
 
@@ -81,9 +84,19 @@ def api_mode(request):
 
 
 @csrf_exempt
+@require_POST
+def api_reload(request):
+    mgr    = _mgr()
+    result = mgr.reload()
+    return JsonResponse(result)
+
+
+@csrf_exempt
 def api_history(request):
     if request.method == "DELETE":
+        client_sid = (request.GET.get("sid") or "").strip()
         mgr = _mgr()
-        mgr.clear_history(_session_id(request))
+        sid = client_sid if client_sid else _session_id(request)
+        mgr.clear_history(sid)
         return JsonResponse({"cleared": True})
     return JsonResponse({"error": "Method not allowed"}, status=405)
