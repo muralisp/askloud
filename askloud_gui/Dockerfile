@@ -32,6 +32,24 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] \
     && apt-get update && apt-get install -y --no-install-recommends google-cloud-cli \
     && rm -rf /var/lib/apt/lists/*
 
+# ── Terraform ────────────────────────────────────────────────────────────────
+ARG TERRAFORM_VERSION=1.9.8
+RUN curl -fsSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
+        -o /tmp/terraform.zip \
+    && unzip -q /tmp/terraform.zip -d /usr/local/bin \
+    && rm /tmp/terraform.zip \
+    && terraform --version
+
+# ── Rover (Terraform plan visualizer) ────────────────────────────────────────
+ARG ROVER_VERSION=0.3.3
+RUN curl -fsSL "https://github.com/im2nguyen/rover/releases/download/v${ROVER_VERSION}/rover_${ROVER_VERSION}_linux_amd64.zip" \
+        -o /tmp/rover.zip \
+    && unzip -q /tmp/rover.zip -d /tmp/rover_bin \
+    && find /tmp/rover_bin -type f -name "rover*" | head -1 \
+         | xargs -I{} install -m 755 {} /usr/local/bin/rover \
+    && rm -rf /tmp/rover.zip /tmp/rover_bin \
+    && rover --version || true
+
 # ── Python dependencies ───────────────────────────────────────────────────────
 WORKDIR /app
 COPY requirements.txt            ./engine-requirements.txt

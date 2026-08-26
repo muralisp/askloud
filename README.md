@@ -1,6 +1,8 @@
 # Askloud
 
-A conversational search tool for querying multi-cloud infrastructure inventory across AWS, GCP, and Azure — no query language required.
+**Ask your cloud anything. Change it too.**
+
+A conversational cloud operations tool for querying and acting on multi-cloud infrastructure across AWS, GCP, and Azure — no query language required.
 
 Ask in plain English. Get a formatted table. Your inventory data never leaves your machine.
 
@@ -8,11 +10,13 @@ Ask in plain English. Get a formatted table. Your inventory data never leaves yo
 
 ## Features
 
-- **Two modes** — *snapshot* queries local JSON exports instantly (offline, zero CLI calls); *live* translates your question to cloud CLI commands and runs them in real time
+- **Three modes** — *inventory* queries DynamoDB or local JSON instantly (no CLI calls); *live* translates your question to cloud CLI commands and runs them in real time; *agentic Terraform* reads, modifies, and applies infrastructure changes end-to-end
 - **Natural language queries** — powered by Claude (Anthropic), translated into structured query plans or CLI commands executed locally
 - **Direct search** — single-token input (name, ID, IP) bypasses the LLM entirely; zero token cost
 - **Multi-cloud** — unified interface across AWS, GCP, and Azure
-- **Privacy by design** — in both modes the LLM receives only your question; actual inventory data and CLI output stay on your machine
+- **Privacy by design** — in all modes the LLM receives only your question; actual inventory data and CLI output stay on your machine
+- **Event-driven inventory** — tfstate changes in S3 automatically flow through EventBridge → Lambda → SQS → DynamoDB; EC2 state changes (start/stop/terminate) update inventory in real time
+- **Agentic Terraform changes** — set/remove tags, create resources from HCL templates, or destroy resources via a guided plan-and-confirm flow; DynamoDB updates automatically after apply
 - **Shell integration** — prefix `!` to run any shell command; append `| cmd` to pipe query output through it
 - **Automated collection** — schedule-driven data collector keeps your snapshot fresh
 - **Web GUI** — Django + Plotly chat interface at `localhost:8000`
@@ -292,6 +296,116 @@ After deployment, the GUI and ArgoCD are both reachable through a single Nginx L
 http://<LB-hostname-or-IP>/         → Askloud GUI
 http://<LB-hostname-or-IP>/argocd   → ArgoCD UI
 ```
+
+---
+
+## Event-Driven Inventory Pipeline
+
+Askloud's inventory stays current through a fully serverless, event-driven pipeline — no scheduled polling, no manual syncs.
+
+```
+Terraform apply
+  → tfstate written to S3
+    → EventBridge (S3 object created)
+      → Diff Lambda        — diffs new tfstate vs. DynamoDB; emits UPSERT/DELETE to SQS
+        → Router Lambda    — consumes SQS batch; writes/soft-deletes DynamoDB records
+          → DynamoDB       — single source of truth for all inventory queries
+
+EC2 state change (start / stop / terminate)
+  → EventBridge (EC2 Instance State-change Notification)
+    → EC2 Events Lambda    — emits DELETE to SQS for terminated instances
+      → Router Lambda      → DynamoDB
+```
+
+### How each component works
+
+**Diff Lambda** (`terraform/diff_lambda.py`) — triggered by every `*.tfstate` write to a workload S3 bucket. Reads the new state, extracts all managed resources, then scans DynamoDB for existing records belonging to that workspace. Resources present in the new state become `UPSERT` messages; resources absent from it become `DELETE` messages. Using DynamoDB as the diff baseline (not S3 versioning) means the pipeline self-heals even if an event is missed.
+
+**Router Lambda** (`terraform/router_lambda.py`) — processes SQS batches with per-message failure isolation (`batchItemFailures`). Upserts are fingerprinted (SHA-256 of normalized attributes) so unchanged resources are a cheap no-op. Deletes are soft (a `deleted=true` flag + 7-day TTL) so records are recoverable before DynamoDB purges them.
+
+**EC2 Events Lambda** (`terraform/ec2_events_lambda.py`) — listens for `shutting-down` and `terminated` state-change events. Publishes a `DELETE` message so the inventory reflects instance termination immediately, independent of the next tfstate write.
+
+**Reconcile script** (`ops/reconcile_inventory.py`) — a manual safety net. Reads every tfstate listed in `config/terraform_workspaces.json`, compares against DynamoDB, and soft-deletes any record with no matching live resource. Run with `--dry-run` first.
+
+```bash
+python3 ops/reconcile_inventory.py --dry-run   # preview stale records
+python3 ops/reconcile_inventory.py             # soft-delete them
+```
+
+**Manual bootstrap** (`terraform/askloud_ingest.py`) — seeds DynamoDB directly from S3 tfstate files without going through the Lambda pipeline. Use this for first-time setup or disaster recovery.
+
+```bash
+python3 terraform/askloud_ingest.py --bucket askloud-tfstate --prefix dev/ --dry-run
+python3 terraform/askloud_ingest.py --bucket askloud-tfstate --prefix dev/
+```
+
+### DynamoDB record layout
+
+| Key | Format | Example |
+|---|---|---|
+| `PK` | `aws#ACCOUNT_ID#RESOURCE_TYPE` | `aws#099878477985#aws_instance` |
+| `SK` | `REGION#RESOURCE_ID` | `ap-south-1#i-0abc123def` |
+| `normalized` | Terraform attribute dict | `{instance_type: "t3.medium", ...}` |
+| `deleted` | bool (soft-delete flag) | `false` |
+| `fingerprint` | SHA-256 of normalized attrs | unchanged records → no write |
+| `tfstate_key` | S3 key of source tfstate | used for workspace-scoped diff |
+
+---
+
+## Agentic Terraform Changes
+
+Beyond querying inventory, Askloud can read, modify, and apply infrastructure changes through a guided, LLM-assisted flow — all from the same conversational interface.
+
+### Supported operations
+
+| Operation | What it does |
+|---|---|
+| `set_tag` | Adds or updates a tag on an existing resource block in-place |
+| `remove_tag` | Removes a tag key from an existing resource block |
+| `create_resource` | Elicits parameters interactively, renders an HCL template, appends to `main.tf` |
+| `delete_resource` | Runs `terraform destroy -target=<addr>` against the resolved resource |
+
+### Flow
+
+1. **Resolve workspace** — looks up `config/terraform_workspaces.json` to find the Terraform path, S3 tfstate location, and AWS profile for the target resource
+2. **Read tfstate from S3** — finds the exact Terraform resource address (`module.x.aws_instance.y`) matching the inventory record
+3. **Edit or create** — for modify operations, patches the `.tf` file in-place and shows a unified diff for confirmation; for create, elicits missing parameters and renders an HCL template from `askloud/tf_templates.py`
+4. **Plan** — runs `terraform plan -target=<addr>` and waits for user confirmation before proceeding
+5. **Apply** — runs `terraform apply -auto-approve -target=<addr>`
+6. **Auto-sync** — the Diff Lambda picks up the new tfstate from S3 and updates DynamoDB automatically within seconds
+
+### Example
+
+```
+[inventory] Ask > add tag CostCenter=platform to i-0abc123def456789
+
+  Workspace: dev / ec2 / test-inventory
+  Resource:  aws_instance.web_server
+
+  --- main.tf (before)
+  +++ main.tf (after)
+  @@ -12,6 +12,7 @@
+     tags = {
+       Name        = "web-server"
+       Environment = "dev"
+  +    CostCenter  = "platform"
+     }
+
+  Apply this change? [y/N] y
+
+  Running: terraform plan -target=aws_instance.web_server
+  Running: terraform apply -auto-approve -target=aws_instance.web_server
+
+  ✓ Applied. DynamoDB will update automatically via the ingestion pipeline.
+```
+
+### Adding a new resource type
+
+To enable agentic changes for a new resource:
+1. Add a `.conf` file under `config/aws/` with display column names
+2. Add entries to `FIELD_ALIASES` and `DEDUP_FIELDS` in `askloud/settings.py`
+3. Add the Terraform ↔ engine type mapping in `_ENGINE_TO_TF` (`askloud/terraform_change.py`) and `_RESOURCE_TYPE_MAP` (`askloud/dynamo.py`)
+4. Optionally add an HCL template function to `askloud/tf_templates.py` to enable `create_resource`
 
 ---
 

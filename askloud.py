@@ -5,15 +5,16 @@ Askloud — Cloud Inventory Chat Engine
 Ask questions in plain English or search by name, ID, or IP address.
 
 Modes:
-  snapshot (default) — searches pre-fetched local inventory data (fast, no credentials needed)
-  live               — runs real-time CLI queries against cloud providers
+  inventory (default) — searches pre-fetched inventory data (fast, no credentials needed)
+  live                — runs real-time CLI queries against cloud providers
 
 Usage:
-  python3 askloud.py                          # interactive snapshot mode
-  python3 askloud.py --live                   # interactive live mode
-  python3 askloud.py web-01                   # direct search (no LLM)
-  python3 askloud.py "list running instances" # natural language query
-  python3 askloud.py --live "show dev ec2"    # live query
+  python3 askloud.py                           # interactive inventory mode
+  python3 askloud.py --live                    # interactive live mode
+  python3 askloud.py --read-only               # inventory mode, changes disabled
+  python3 askloud.py web-01                    # direct search (no LLM)
+  python3 askloud.py "list running instances"  # natural language query
+  python3 askloud.py --live "show dev ec2"     # live query
 
 Requirements:
   pip install anthropic jmespath
@@ -39,6 +40,12 @@ def main():
         help="Start in live mode: fetch real-time data via CLI (requires cloud credentials)",
     )
     parser.add_argument(
+        "--read-only",
+        action="store_true",
+        dest="read_only",
+        help="Disable all Terraform changes (set_tag, create_resource, etc.)",
+    )
+    parser.add_argument(
         "query",
         nargs="*",
         help="Optional query to run non-interactively",
@@ -54,7 +61,7 @@ def main():
     else:
         sys.argv[1:] = []
 
-    CloudInventoryEngine(mode=mode).run()
+    CloudInventoryEngine(mode=mode, read_only=args.read_only).run()
 
 
 if __name__ == "__main__":
